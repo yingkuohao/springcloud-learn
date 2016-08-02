@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
  * Date: 16/6/27
  * Time: 下午5:59
  * CopyRight: taobao
- * Descrption:
+ * Descrption:    http://localhost:3333/add
  */
 
 
@@ -21,7 +21,7 @@ public class ConsumerController {
 
      @RequestMapping(value = "/add", method = RequestMethod.GET)
      public String add() {
-         return restTemplate.getForEntity("http://cloud-simple-service/add?a=10&b=20", String.class).getBody();
+         return restTemplate.getForEntity("http://serviceA/add?a=10&b=20", String.class).getBody();
      }
 
 }
