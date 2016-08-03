@@ -24,4 +24,9 @@ public class App {
     public AccessFilter accessFilter() {
         return new AccessFilter();
     }
+
+    @Bean
+    public RoutingFilter routingFilter() {
+        return new RoutingFilter();
+    }
 }
