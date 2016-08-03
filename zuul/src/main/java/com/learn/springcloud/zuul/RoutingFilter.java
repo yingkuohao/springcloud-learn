@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * Date: 16/8/2
  * Time: 下午8:33
  * CopyRight: taobao
- * Descrption:
+ * Descrption:      路由
  */
 
 public class RoutingFilter extends ZuulFilter {
