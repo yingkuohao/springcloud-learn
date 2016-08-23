@@ -1,6 +1,10 @@
 package com.learn.springcloud.zuul.consts;
 
-import java.util.List;
+import com.learn.springcloud.zuul.hystrix.ResourceVO;
+import com.netflix.zuul.context.RequestContext;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +19,8 @@ import java.util.regex.Pattern;
 
 public class ZuulUtil {
 
+    public static final String SERVICE_A = "serviceA";
+
     static {
         init();
     }
@@ -25,7 +31,18 @@ public class ZuulUtil {
         ZuulConsts.whiteUrlList.add("/white/*");
 
         ZuulConsts.blackIPList.add("127.0.0.1");
+        initSentinalPool();
+    }
 
+
+    private static void initSentinalPool() {
+        ResourceVO resourceVO = new ResourceVO();
+        resourceVO.setUrlPattern("/serviceA");
+        resourceVO.setTime(60);
+        resourceVO.setLimit(6l);
+        resourceVO.setCallback("/failover");
+        resourceVO.setBizId(SERVICE_A);
+        ZuulConsts.sentinelMap.put(SERVICE_A, resourceVO);
     }
 
 
@@ -35,7 +52,7 @@ public class ZuulUtil {
      * @param path usually the RequestURI()
      * @return true if the pattern matches
      */
-    public static   boolean checkPath(String path) {
+    public static boolean checkPath(String path) {
         if (ZuulConsts.blackUrlList.contains(path)) {
             return false;
         } else if (ZuulConsts.whiteUrlList.contains(path)) {
@@ -44,7 +61,7 @@ public class ZuulUtil {
         return true;
     }
 
-    static  boolean checkIP(String IP) {
+    static boolean checkIP(String IP) {
         if (ZuulConsts.blackIPList.contains(IP)) {
             return false;
         }
@@ -62,4 +79,19 @@ public class ZuulUtil {
         return tag;
     }
 
+    public static String getURI() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+        String uri = request.getRequestURI();
+        return uri;
+    }
+
+    public static HttpServletRequest getRequest() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        return ctx.getRequest();
+    }
+    public static HttpServletResponse getResponse() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        return ctx.getResponse();
+    }
 }

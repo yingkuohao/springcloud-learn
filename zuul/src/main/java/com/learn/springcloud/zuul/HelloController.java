@@ -4,6 +4,7 @@ import com.learn.springcloud.zuul.consts.ZuulConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -21,6 +22,7 @@ public class HelloController {
 
 
     @RequestMapping("/index")
+    @ResponseBody
     public Object index() {
         log.info("[[[[[[[[[[[[[[[[[[[[[[[running index method!]]]]]]]]]]]]]]");
 
@@ -33,6 +35,12 @@ public class HelloController {
         return "home";
     }
 
+
+    @RequestMapping("/errorpage")
+     public Object errorpage() {
+         log.info("ZuulConsts.error!!!");
+         return "error";
+     }
 
     @RequestMapping("/black/test")
     public Object black() {
@@ -49,6 +57,12 @@ public class HelloController {
     @RequestMapping("/pv")
     public Object pv() {
         log.info("ZuulConsts.pvMap=" + ZuulConsts.pvMap.toString());
-        return "home";
+        return "pv";
     }
+
+    @RequestMapping("/failover")
+      public Object failover() {
+          log.info("failover execute!" );
+          return "failover";
+  }
 }

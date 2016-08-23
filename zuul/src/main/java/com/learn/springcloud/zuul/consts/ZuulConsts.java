@@ -1,5 +1,7 @@
 package com.learn.springcloud.zuul.consts;
 
+import com.learn.springcloud.zuul.hystrix.ResourceVO;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +29,10 @@ public class ZuulConsts {
 
     public static final String uri_prefix_pattern = "\\alicp\\.*";
 
-        public static  Map<String, LongAdder> pvMap = new ConcurrentHashMap<String, LongAdder>();
+    public static Map<String, LongAdder> pvMap = new ConcurrentHashMap<String, LongAdder>();
+
+
+    public static Map<String, ResourceVO> sentinelMap = new HashMap<String, ResourceVO>(); //限流map
 
     public static void main(String[] args) {
     }

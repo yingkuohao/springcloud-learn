@@ -1,0 +1,26 @@
+server:
+  port: 8181
+
+zuul:
+  filter:
+    pre:
+      path: pre
+    routing:
+      path: route
+    post:
+      path: post
+      ##serviceA的请求直接定位到具体的某台服务器
+  routes:
+    serviceA:
+      path:  /serviceA/**
+      url: http://localhost:7071/
+      serviceId: serviceA
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  application:
+    name: api-gateway

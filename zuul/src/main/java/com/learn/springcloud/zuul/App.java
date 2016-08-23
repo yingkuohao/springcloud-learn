@@ -1,6 +1,11 @@
 package com.learn.springcloud.zuul;
 
+import com.netflix.zuul.context.ContextLifecycleFilter;
+import com.netflix.zuul.filters.FilterRegistry;
+import com.netflix.zuul.http.ZuulServlet;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Bean;
@@ -28,5 +33,19 @@ public class App {
     @Bean
     public RoutingFilter routingFilter() {
         return new RoutingFilter();
+    }
+
+    @Bean
+    public ServletRegistrationBean zuulServlet() {
+        ServletRegistrationBean servlet = new ServletRegistrationBean(new ZuulServlet());
+        servlet.addUrlMappings("/springboot");
+        return servlet;
+    }
+
+    @Bean
+    public FilterRegistrationBean contextLIfecycleFilter() {
+        FilterRegistrationBean filter = new FilterRegistrationBean(new ContextLifecycleFilter());
+        filter.addUrlPatterns("/*");
+        return filter;
     }
 }

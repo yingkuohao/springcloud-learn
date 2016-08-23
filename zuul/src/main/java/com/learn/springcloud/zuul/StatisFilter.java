@@ -1,6 +1,8 @@
 package com.learn.springcloud.zuul;
 
+import com.learn.springcloud.zuul.consts.SentinelUtil;
 import com.learn.springcloud.zuul.consts.ZuulConsts;
+import com.learn.springcloud.zuul.hystrix.ResourceVO;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import org.slf4j.Logger;
@@ -69,7 +71,8 @@ public class StatisFilter extends ZuulFilter {
         } else {
             pv = new LongAdder();
         }
-        pv.increment();
+
+        SentinelUtil.increment(uri);        //如果是限流的请求,限流的对象池也要更新
         ZuulConsts.pvMap.put(uri,pv);
         return null;
     }
