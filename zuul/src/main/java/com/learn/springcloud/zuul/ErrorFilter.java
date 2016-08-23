@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 /**
  * Created by IntelliJ IDEA.
  * User: chengjing
- * Date: 16/8/2
- * Time: 下午8:33
+ * Date: 16/8/22
+ * Time: 下午7:57
  * CopyRight: taobao
- * Descrption:      路由
+ * Descrption:异常filter
  */
 @Component
-public class RoutingFilter extends ZuulFilter {
+public class ErrorFilter extends ZuulFilter {
     private static Logger log = LoggerFactory.getLogger(AccessFilter.class);
 
     @Override
     public String filterType() {
-        return "route";
+        return FilterTypeEnum.error.getCode();
     }
 
     @Override
@@ -34,7 +34,8 @@ public class RoutingFilter extends ZuulFilter {
 
     @Override
     public Object run() {
-        log.info("---routing run---");
+        log.info("ErrorFilter run!");
+        //yingkhtodo:desc:forward
         return null;
     }
 }

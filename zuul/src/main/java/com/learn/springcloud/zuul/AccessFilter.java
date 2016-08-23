@@ -14,6 +14,12 @@ import javax.servlet.http.HttpServletRequest;
  * Time: 下午7:39
  * CopyRight: taobao
  * Descrption:权限filter
+ *
+ * 1. 校验App是否合法
+ * 2. 校验token是否合法
+ * 3. ip是否在黑名单中
+ * 4. ip是否在白名单中
+ *
  */
 
 public class AccessFilter extends ZuulFilter {
@@ -21,12 +27,12 @@ public class AccessFilter extends ZuulFilter {
 
     @Override
     public String filterType() {
-        return "pre";         //指定filter类型为PRE
+        return FilterTypeEnum.pre.getCode();         //指定filter类型为PRE
     }
 
     @Override
     public int filterOrder() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -36,11 +42,12 @@ public class AccessFilter extends ZuulFilter {
 
     @Override
     public Object run() {
-        System.out.println("---pre run---");
+        System.out.println("---1. pre run---");
          RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
 
         log.info(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+        log.info("getRouteHost:"+ctx.getRouteHost())  ;
         //校验入参中是否有token
         Object accessToken = request.getParameter("accessToken");
         if (accessToken == null) {
