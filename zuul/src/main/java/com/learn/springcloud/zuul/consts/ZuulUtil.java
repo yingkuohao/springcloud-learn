@@ -39,10 +39,13 @@ public class ZuulUtil {
         ResourceVO resourceVO = new ResourceVO();
         resourceVO.setUrlPattern("/serviceA");
         resourceVO.setTime(60);
-        resourceVO.setLimit(6l);
+        resourceVO.setCapacity(6);
         resourceVO.setCallback("/failover");
         resourceVO.setBizId(SERVICE_A);
+        //初始化用户自定义的限流业务策略
         ZuulConsts.sentinelMap.put(SERVICE_A, resourceVO);
+        //初始化LRUmap
+        ZuulConsts.lruMap.put(SERVICE_A, SentinelUtil.getLRUMap(resourceVO));
     }
 
 
@@ -90,8 +93,23 @@ public class ZuulUtil {
         RequestContext ctx = RequestContext.getCurrentContext();
         return ctx.getRequest();
     }
+
     public static HttpServletResponse getResponse() {
         RequestContext ctx = RequestContext.getCurrentContext();
         return ctx.getResponse();
     }
+
+
+    public static String getRemortIP(HttpServletRequest request) {
+        if (request.getHeader("x-forwarded-for") == null) {
+            return request.getRemoteAddr();
+        }
+        return request.getHeader("x-forwarded-for");
+
+    }
+
+    public static boolean isPreException() {
+        return ZuulUtil.getResponse().containsHeader(ZuulConsts.ALICP_HEADER_EXCEPTION);
+    }
+
 }

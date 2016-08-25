@@ -50,7 +50,7 @@ public class CircuitFilter extends ZuulFilter {
         log.info("--2. CircuitFilter run!");
         //yingkhtodo:desc:forward
         ResourceVO resourceVO = threadLocal.get();
-        if (resourceVO.outOfFlow()) {
+        if (SentinelUtil.outOfFlow(ZuulUtil.getURI())) {
             //如果超过流控,则进行callback 回调.
             String callbackurl = resourceVO.getCallback();
             if (StringUtils.isEmpty(callbackurl)) {
@@ -58,7 +58,9 @@ public class CircuitFilter extends ZuulFilter {
             }
             try {
                 log.error("--out of flow ,failover---");
+                ZuulUtil.getResponse().setHeader(ZuulConsts.ALICP_HEADER_EXCEPTION, "outofFlow");
                 ZuulUtil.getResponse().sendRedirect(callbackurl);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

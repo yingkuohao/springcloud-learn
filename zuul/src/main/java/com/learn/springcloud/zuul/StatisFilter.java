@@ -2,6 +2,7 @@ package com.learn.springcloud.zuul;
 
 import com.learn.springcloud.zuul.consts.SentinelUtil;
 import com.learn.springcloud.zuul.consts.ZuulConsts;
+import com.learn.springcloud.zuul.consts.ZuulUtil;
 import com.learn.springcloud.zuul.hystrix.ResourceVO;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -27,8 +28,6 @@ import java.util.concurrent.atomic.LongAdder;
 @Component
 public class StatisFilter extends ZuulFilter {
 
-    private static String ALICP_HEADER_VERSION = "x-ca-version";
-    private static String ALICP_HEADER_COPYRIGHT = "x-ca-copyright";
 
     private static Logger log = LoggerFactory.getLogger(StatisFilter.class);
 
@@ -44,6 +43,10 @@ public class StatisFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
+        if (ZuulUtil.isPreException()) {
+            log.error(" pre filter is exception!");
+            return false;
+        }
         return true;
     }
 
@@ -56,24 +59,23 @@ public class StatisFilter extends ZuulFilter {
         HttpServletResponse response = ctx.getResponse();
         //增加header等.
 //                  ctx.setResponseStatusCode(HttpServletResponse.SC_OK)      //我们可以设置一些自定义的错误码到响应头
-        if(response==null) {
+        if (response == null) {
             return null;
         }
-        response.setHeader(ALICP_HEADER_VERSION, "1.0.0");
-        response.setHeader(ALICP_HEADER_COPYRIGHT, "alicp");
+        response.setHeader(ZuulConsts.ALICP_HEADER_VERSION, "1.0.0");
+        response.setHeader(ZuulConsts.ALICP_HEADER_COPYRIGHT, "alicp");
         log.info("header=" + response.getHeaderNames());
 
         //统计pv
         String uri = request.getRequestURI();
         LongAdder pv;
         if (ZuulConsts.pvMap.containsKey(uri)) {
-         pv=   ZuulConsts.pvMap.get(uri);
+            pv = ZuulConsts.pvMap.get(uri);
         } else {
             pv = new LongAdder();
         }
-
-        SentinelUtil.increment(uri);        //如果是限流的请求,限流的对象池也要更新
-        ZuulConsts.pvMap.put(uri,pv);
+        SentinelUtil.increment(uri, ZuulUtil.getRemortIP(request));        //如果是限流的请求,限流的对象池也要更新
+        ZuulConsts.pvMap.put(uri, pv);
         return null;
     }
 }

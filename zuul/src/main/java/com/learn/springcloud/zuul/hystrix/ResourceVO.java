@@ -10,8 +10,8 @@ import com.netflix.hystrix.util.LongAdder;
  * Time: 下午4:15
  * CopyRight: taobao
  * Descrption:
- *
- * 这需要记录每一个时间点的访问量,因为用户请求是按时间点过来的
+ * <p/>
+ * 这需要记录每一个时间点的访问量,因为用户请求是按时间点过来的,可以用ConcurrentLinkedHashMap 或者ringbuffer思想
  */
 
 
@@ -19,10 +19,11 @@ public class ResourceVO extends BaseDo {
     private static final long serialVersionUID = 6888269499566162709L;
     private String bizId;
     private String urlPattern;               //urlpattern
-    private Long limit = 5l;             //访问次数阈值
-    private LongAdder currentViewCount=new LongAdder(); //当前访问次数
+    private Integer capacity = 5;             //访问次数阈值
+    private LongAdder currentViewCount = new LongAdder(); //当前访问次数
     private int time = 60;             //限定时间
     private String callback;         //被限制后的callback url
+    private volatile boolean outOfFlow;//是否被限流
 
     public String getUrlPattern() {
         return urlPattern;
@@ -32,12 +33,12 @@ public class ResourceVO extends BaseDo {
         this.urlPattern = urlPattern;
     }
 
-    public Long getLimit() {
-        return limit;
+    public Integer getCapacity() {
+        return capacity;
     }
 
-    public void setLimit(Long limit) {
-        this.limit = limit;
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 
     public int getTime() {
@@ -73,7 +74,7 @@ public class ResourceVO extends BaseDo {
     }
 
     public boolean outOfFlow() {
-        return currentViewCount.longValue() >= limit.longValue();
+        return currentViewCount.longValue() >= capacity.longValue();
     }
 
 }

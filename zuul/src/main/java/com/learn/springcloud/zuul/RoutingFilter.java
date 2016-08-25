@@ -1,5 +1,6 @@
 package com.learn.springcloud.zuul;
 
+import com.learn.springcloud.zuul.consts.ZuulUtil;
 import com.netflix.zuul.ZuulFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,10 @@ public class RoutingFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
+        if (ZuulUtil.isPreException()) {
+            log.error(" pre filter is exception!");
+            return false;
+        }
         return true;
     }
 
