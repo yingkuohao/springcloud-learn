@@ -62,6 +62,8 @@ public class AccessFilter extends ZuulFilter {
             }
         }
         log.info("---access token ok----");
+        //校验app是否合法
+        //校验
         return null;
     }
 

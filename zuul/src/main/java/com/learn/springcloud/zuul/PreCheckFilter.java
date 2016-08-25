@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.io.IOException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,9 +47,31 @@ public class PreCheckFilter extends ZuulFilter {
     public Object run() {
         log.info("--0. PreCheckFilter run!");
         //yingkhtodo:desc:forward
+
+        //1.校验ip是否在黑名单
+        if (isInBlack()) {
+            try {
+                log.error("--ip in blackIPList ,failover---");
+                ZuulUtil.getResponse().setHeader(ZuulConsts.ALICP_HEADER_EXCEPTION, "ip illegal!");
+                ZuulUtil.getResponse().sendRedirect(ZuulConsts.ALICP_FAILOVER_URL);
+
+            } catch (IOException e) {
+                log.error("sendRedirect error",e);
+
+            }
+        }
+        //2. 请求的url是否在黑名单
+
+        //2. 校验请求是否在白名单
+
+        //3. 关键参数解析,如版本
         return null;
     }
 
+    private boolean isInBlack() {
+
+        return ZuulConsts.blackIPList.contains(ZuulUtil.getRemortIP(ZuulUtil.getRequest())) || ZuulConsts.blackUrlList.contains(ZuulUtil.getURI());
+    }
 
 
 }

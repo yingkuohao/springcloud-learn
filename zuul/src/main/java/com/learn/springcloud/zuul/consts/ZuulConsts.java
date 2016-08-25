@@ -40,6 +40,9 @@ public class ZuulConsts {
     public static String ALICP_HEADER_VERSION = "x-ca-version";
     public static String ALICP_HEADER_COPYRIGHT = "x-ca-copyright";
     public static String    ALICP_HEADER_EXCEPTION = "x-ca-exception";
+
+    public static String ALICP_FAILOVER_URL = "/failover";
+
     public static void main(String[] args) {
     }
 }

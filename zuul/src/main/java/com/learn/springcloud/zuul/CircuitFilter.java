@@ -23,6 +23,7 @@ import java.io.IOException;
  */
 @Component
 public class CircuitFilter extends ZuulFilter {
+
     private static Logger log = LoggerFactory.getLogger(CircuitFilter.class);
     ThreadLocal<ResourceVO> threadLocal = new ThreadLocal<ResourceVO>();
 
@@ -40,7 +41,7 @@ public class CircuitFilter extends ZuulFilter {
     public boolean shouldFilter() {
         //解析uri, 遍历限流map,判断有没有符合的条件的
         ResourceVO resourceVO = SentinelUtil.getResourceByUri(ZuulUtil.getURI());
-        System.out.println("---resourceVO---" + resourceVO.toString());
+        log.info("---resourceVO---" + resourceVO.toString());
         threadLocal.set(resourceVO);
         return resourceVO != null;
     }
@@ -50,11 +51,11 @@ public class CircuitFilter extends ZuulFilter {
         log.info("--2. CircuitFilter run!");
         //yingkhtodo:desc:forward
         ResourceVO resourceVO = threadLocal.get();
-        if (SentinelUtil.outOfFlow(ZuulUtil.getURI())) {
             //如果超过流控,则进行callback 回调.
+        if (SentinelUtil.outOfFlow(ZuulUtil.getURI())) {
             String callbackurl = resourceVO.getCallback();
             if (StringUtils.isEmpty(callbackurl)) {
-                callbackurl = "/failover";
+                callbackurl = ZuulConsts.ALICP_FAILOVER_URL;
             }
             try {
                 log.error("--out of flow ,failover---");
@@ -62,7 +63,7 @@ public class CircuitFilter extends ZuulFilter {
                 ZuulUtil.getResponse().sendRedirect(callbackurl);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("sendRedirect error", e);
             }
         }
         return null;
