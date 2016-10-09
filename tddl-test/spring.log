@@ -1,0 +1,74 @@
+2016-10-09 14:56:47.253  INFO 18138 --- [main] TestTerminalMapper                       : Starting TestTerminalMapper on chengjingPCdeMacBook-Air.local with PID 18138 (/Users/chengjing/Project/selfLearn/master/springcloud-learn/tddl-test/target/test-classes started by chengjing in /Users/chengjing/Project/selfLearn/master/springcloud-learn/tddl-test)
+2016-10-09 14:56:47.255  INFO 18138 --- [main] TestTerminalMapper                       : The following profiles are active: dev
+2016-10-09 14:56:48.958  INFO 18138 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47db5fa5: startup date [Sun Oct 09 14:56:48 CST 2016]; root of context hierarchy
+2016-10-09 14:56:51.770  INFO 18138 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$cc21548b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2016-10-09 14:56:52.837  INFO 18138 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 7002 (http)
+2016-10-09 14:56:52.868  INFO 18138 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2016-10-09 14:56:52.870  INFO 18138 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.0.33
+2016-10-09 14:56:53.146  INFO 18138 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2016-10-09 14:56:53.146  INFO 18138 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 4194 ms
+2016-10-09 14:56:53.955  INFO 18138 --- [localhost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
+2016-10-09 14:56:53.966  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'metricFilter' to: [/*]
+2016-10-09 14:56:53.967  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'characterEncodingFilter' to: [/*]
+2016-10-09 14:56:53.967  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2016-10-09 14:56:53.967  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2016-10-09 14:56:53.967  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'requestContextFilter' to: [/*]
+2016-10-09 14:56:53.968  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+2016-10-09 14:56:53.968  INFO 18138 --- [localhost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'applicationContextIdFilter' to: [/*]
+2016-10-09 14:56:54.421  INFO 18138 --- [main] c.t.t.common.utils.logger.LoggerFactory  : using logger: com.taobao.tddl.common.utils.logger.slf4j.Slf4jLoggerAdapter
+2016-10-09 14:56:54.643  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load UnitConfigDataHandler[null] extension by class[com.taobao.tddl.config.diamond.DiamondConfigDataHandler], tddl version: 5.1.22
+2016-10-09 14:56:54.722  INFO 18138 --- [main] com.taobao.diamond.utils.AppNameUtils    : The classpath is /Users/chengjing/Project/selfLearn/master/springcloud-learn/tddl-test/target/test-classes/
+2016-10-09 14:56:54.727  WARN 18138 --- [main] com.taobao.diamond.utils.AppNameUtils    : not found [ear,spring,or war]
+2016-10-09 14:56:55.118  INFO 18138 --- [main] com.taobao.tddl.matrix.jdbc.TDataSource  :  [TDDL] connection properties data is null, data id is: com.taobao.tddl.ALICPPRIZE_APP.properties, tddl version: 5.1.22
+2016-10-09 14:56:55.190  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load AbstractConfigDataHolder[null] extension by class[com.taobao.tddl.config.diamond.DiamondConfigHolder], tddl version: 5.1.22
+2016-10-09 14:56:55.513  INFO 18138 --- [main] c.t.t.matrix.config.MatrixConfigHolder   :  [TDDL] Diamond environment is: DAILY, tddl version: 5.1.22
+2016-10-09 14:56:56.349  WARN 18138 --- [main] com.taobao.tddl.rule.TddlRuleConfig      :  [TDDL] no sharding rule , just ignore, tddl version: 5.1.22
+2016-10-09 14:56:56.790  INFO 18138 --- [main] c.t.t.o.c.table.StaticSchemaManager      :  [TDDL] get schema null, appName is:ALICPPRIZE_APP, unitName is:null, filePath is: null, dataId is: com.taobao.and_orV0.ALICPPRIZE_APP_SCHEMA_DATAID, tddl version: 5.1.22
+2016-10-09 14:56:57.570  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load IRepositoryFactory[MYSQL_JDBC] extension by class[com.taobao.tddl.repo.mysql.spi.RepositoryFactoryMyImp], tddl version: 5.1.22
+2016-10-09 14:56:57.925  INFO 18138 --- [main] c.t.t.group.config.GroupConfigManager    :  [TDDL] [parse2DataSourceWrapperList]dsWeightCommaStr=db081155116_sqa_et15sqa_alicpprize_3308:r10w10p0,db081155103_sqa_et15sqa_alicpprize_3308:r0w0p0, tddl version: 5.1.22
+2016-10-09 14:56:57.970  INFO 18138 --- [main] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] reg druid mbean(com.alibaba.druid.stat.JdbcStatManager) success., tddl version: 5.1.22
+2016-10-09 14:56:57.985  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load TPasswordCoder[null] extension by class[com.taobao.tddl.securety.PasswordCoderTaobaoImpl], tddl version: 5.1.22
+2016-10-09 14:56:58.452  INFO 18138 --- [main] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2016-10-09 14:56:58.478  INFO 18138 --- [main] com.taobao.tddl.atom.TAtomDataSource     :  [TDDL] create new TAtomDsConfHandle dbName : atom.dbkey.DEFAULT_UNIT^ALICPPRIZE_APP^db081155116_sqa_et15sqa_alicpprize_3308, tddl version: 5.1.22
+2016-10-09 14:56:58.499  INFO 18138 --- [main] c.t.tddl.atom.jdbc.TDataSourceWrapper    : set thread count restrict 0
+2016-10-09 14:56:58.499  INFO 18138 --- [main] c.t.tddl.atom.jdbc.TDataSourceWrapper    : set maxConcurrentReadRestrict 0
+2016-10-09 14:56:58.499  INFO 18138 --- [main] c.t.tddl.atom.jdbc.TDataSourceWrapper    : set maxConcurrentWriteRestrict 0
+2016-10-09 14:56:58.499  INFO 18138 --- [main] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] set datasource key: db081155116_sqa_et15sqa_alicpprize_3308, tddl version: 5.1.22
+2016-10-09 14:56:58.508  INFO 18138 --- [main] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} inited
+2016-10-09 14:56:58.509  INFO 18138 --- [main] com.taobao.tddl.atom.TAtomDataSource     :  [TDDL] create new TAtomDsConfHandle dbName : atom.dbkey.DEFAULT_UNIT^ALICPPRIZE_APP^db081155103_sqa_et15sqa_alicpprize_3308, tddl version: 5.1.22
+2016-10-09 14:56:58.509  INFO 18138 --- [main] c.t.tddl.atom.jdbc.TDataSourceWrapper    : set thread count restrict 0
+2016-10-09 14:56:58.509  INFO 18138 --- [main] c.t.tddl.atom.jdbc.TDataSourceWrapper    : set maxConcurrentReadRestrict 0
+2016-10-09 14:56:58.509  INFO 18138 --- [main] c.t.tddl.atom.jdbc.TDataSourceWrapper    : set maxConcurrentWriteRestrict 0
+2016-10-09 14:56:58.509  INFO 18138 --- [main] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] set datasource key: db081155103_sqa_et15sqa_alicpprize_3308, tddl version: 5.1.22
+2016-10-09 14:56:58.527  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load IRepositoryFactory[DEMO] extension by class[com.taobao.tddl.repo.demo.spi.RepositoryFactoryDemoImp], tddl version: 5.1.22
+2016-10-09 14:56:59.419  INFO 18138 --- [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47db5fa5: startup date [Sun Oct 09 14:56:48 CST 2016]; root of context hierarchy
+2016-10-09 14:56:59.642  INFO 18138 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2016-10-09 14:56:59.645  INFO 18138 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2016-10-09 14:56:59.736  INFO 18138 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-10-09 14:56:59.737  INFO 18138 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-10-09 14:56:59.822  INFO 18138 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-10-09 14:57:00.699  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/env/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint.value(java.lang.String)
+2016-10-09 14:57:00.699  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/env || /env.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.700  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/endpoints || /endpoints.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.701  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+2016-10-09 14:57:00.701  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.702  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/mappings || /mappings.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.704  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/trace || /trace.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.710  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/dump || /dump.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.711  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/beans || /beans.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.713  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/autoconfig || /autoconfig.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.717  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+2016-10-09 14:57:00.718  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/info || /info.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:00.718  INFO 18138 --- [main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/configprops || /configprops.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+2016-10-09 14:57:01.944  INFO 18138 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 7002 (http)
+2016-10-09 14:57:01.952  WARN 18138 --- [main] c.a.b.e.ApplicationReadyEventListener    : Configuration 'startup.at' not found, start your application with: '--startup.at=[currentTimeMillis]'
+2016-10-09 14:57:01.954  INFO 18138 --- [main] TestTerminalMapper                       : Started TestTerminalMapper in 16.839 seconds (JVM running for 19.107)
+2016-10-09 14:57:06.905  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load TddlEagleeye[null] extension by class[com.taobao.tddl.eagleEye.EagleEyeTaobaoImpl], tddl version: 5.1.22
+2016-10-09 14:57:09.071  INFO 18138 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load TddlRouter[null] extension by class[com.taobao.tddl.unit.RouterTaobaoImpl], tddl version: 5.1.22
+2016-10-09 14:57:14.449  INFO 18138 --- [Thread-5] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47db5fa5: startup date [Sun Oct 09 14:56:48 CST 2016]; root of context hierarchy
+2016-10-09 14:57:14.464  INFO 18138 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] Start!, tddl version: 5.1.22
+2016-10-09 14:57:14.471  INFO 18138 --- [Thread-5] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2016-10-09 14:57:14.472  INFO 18138 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] End!, tddl version: 5.1.22
+2016-10-09 14:57:14.473  INFO 18138 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] Start!, tddl version: 5.1.22
+2016-10-09 14:57:14.473  INFO 18138 --- [Thread-5] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} closed
+2016-10-09 14:57:14.474  INFO 18138 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] End!, tddl version: 5.1.22

@@ -1,0 +1,28 @@
+spring.application.name=tddl-demo
+server.port=7011
+management.port=7012
+#service info
+info.service.name=tddl-demo
+info.service.version=1.0.0-SNAPSHOT
+info.service.description=Demo project for Spring Boot
+info.service.group=service_group
+info.service.tags=tag1,tag2
+info.team.developer=xxxx,yyyy
+info.team.tester=xxxx
+info.team.pe=xxxx
+info.scm.url=http://gitlab.alibaba-inc.com/xxx
+info.docs.url=http://docs.alibaba-inc.com/xxx
+# logging
+logging.level.root=info
+logging.path=${user.home}/logs
+logging.file=${spring.application.name}.log
+
+spring.tddl.app=ALICPPRIZE_APP
+spring.tddl.sequence=default
+spring.tddl.health-check-sql=select now()
+
+#tddl.first.appName=ICBU_UIC_DEV_APP
+tddl.secondary.appName=ICBU_MALANDA_APP
+
+spring.eagleeye.http-enable=true
+spring.eagleeye.use-local-ip=true
