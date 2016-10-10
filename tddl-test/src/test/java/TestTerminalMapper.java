@@ -1,19 +1,13 @@
 import com.springcloud.tddl.dao.TerminalMapper;
 import com.springcloud.tddl.dao.model.TerminalDO;
-import com.springcloud.tddl.sharding.MultipleDataSource;
-import com.springcloud.tddl.sharding.dao.DynamicDataSourceHolder;
+import com.springcloud.tddl.sharding.DynamicDataSourceHolder;
 import com.springcloud.tddl.sharding.dao.UserTicketIndex;
 import com.springcloud.tddl.sharding.dao.UserTicketIndexDao;
-import com.taobao.tddl.group.dbselector.AbstractDBSelector;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.

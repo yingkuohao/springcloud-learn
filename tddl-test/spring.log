@@ -23189,3 +23189,14 @@ Caused by: java.lang.IllegalArgumentException: Group Config Is Null, AppName >> 
 2016-10-10 11:18:57.001  INFO 20491 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 7002 (http)
 2016-10-10 11:18:57.013  WARN 20491 --- [main] c.a.b.e.ApplicationReadyEventListener    : Configuration 'startup.at' not found, start your application with: '--startup.at=[currentTimeMillis]'
 2016-10-10 11:18:57.015  INFO 20491 --- [main] TestTerminalMapper                       : Started TestTerminalMapper in 451.96 seconds (JVM running for 456.199)
+2016-10-10 11:19:11.834  INFO 20491 --- [main] c.t.t.c.utils.extension.ExtensionLoader  :  [TDDL] load TddlEagleeye[null] extension by class[com.taobao.tddl.eagleEye.EagleEyeTaobaoImpl], tddl version: 5.1.22
+2016-10-10 11:19:18.055  WARN 20491 --- [main] com.alibaba.druid.pool.DruidDataSource   : not full timeout retry : 1
+2016-10-10 11:19:23.059  WARN 20491 --- [main] com.alibaba.druid.pool.DruidDataSource   : not full timeout retry : 2
+2016-10-10 11:19:28.064  WARN 20491 --- [main] com.alibaba.druid.pool.DruidDataSource   : not full timeout retry : 3
+2016-10-10 11:19:33.293  INFO 20491 --- [Thread-5] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@502f1f4c: startup date [Mon Oct 10 11:11:29 CST 2016]; root of context hierarchy
+2016-10-10 11:19:33.334  INFO 20491 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] Start!, tddl version: 5.1.22
+2016-10-10 11:19:33.336  INFO 20491 --- [Thread-5] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2016-10-10 11:19:33.338  INFO 20491 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] End!, tddl version: 5.1.22
+2016-10-10 11:19:33.338  INFO 20491 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] Start!, tddl version: 5.1.22
+2016-10-10 11:19:33.338  INFO 20491 --- [Thread-5] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} closed
+2016-10-10 11:19:33.339  INFO 20491 --- [Thread-5] c.t.tddl.atom.config.TAtomDsConfHandle   :  [TDDL] [DataSource Stop] End!, tddl version: 5.1.22

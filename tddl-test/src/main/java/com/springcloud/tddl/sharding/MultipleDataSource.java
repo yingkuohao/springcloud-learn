@@ -1,9 +1,7 @@
 package com.springcloud.tddl.sharding;
 
-import com.springcloud.tddl.sharding.dao.DynamicDataSourceHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;

@@ -1,4 +1,4 @@
-package com.springcloud.tddl.sharding.dao;
+package com.springcloud.tddl.sharding;
 
 import com.springcloud.tddl.sharding.MultipleDataSource;
 import org.springframework.util.Assert;
