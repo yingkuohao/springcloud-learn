@@ -4,7 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan("com.springcloud.tddl.dao")
+@MapperScan("com.springcloud.tddl")
 public class AccountConfig {
 
 }
