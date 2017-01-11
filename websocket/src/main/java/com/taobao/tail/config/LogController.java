@@ -23,4 +23,11 @@ public class LogController {
         logger.info("index ok");
         return "logs/index";
     }
+
+
+    @RequestMapping("/logls")
+    public String logls(Model model) {
+        logger.info("logls ok");
+        return "logs/logls";
+    }
 }

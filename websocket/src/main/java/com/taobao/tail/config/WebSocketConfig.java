@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver;
  * Descrption:
  */
 @Configuration
-public class WebConfig {
+public class WebSocketConfig {
 
 
     @Bean(name = "velocityViewResolver")
