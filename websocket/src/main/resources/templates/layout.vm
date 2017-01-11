@@ -1,0 +1,3 @@
+#parse("./head.vm")
+$screen_content
+#parse("./foot.vm")

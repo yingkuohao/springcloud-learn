@@ -1,0 +1,75 @@
+.panel-search {
+    width: 1170px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.form-control-select{
+    width: 170px;
+}
+.form-inline .form-control {
+    display: inline-block;
+    vertical-align: middle;
+    width: 170px;
+}
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+    border-top: 1px solid #ddd;
+    line-height: 1.42857;
+    padding: 8px;
+    vertical-align: middle;
+}
+.sub-btn{
+    padding-left: 300px;
+}
+.panel-body {
+    padding: 0px;
+}
+.form-group{
+    margin-top: 15px;margin-left: 10px;
+}
+.form-group-btn{
+    float: right;
+    margin-top: 15px;margin-left: 10px;margin-right: 222px;
+}
+.container-body{
+    margin-right: 15px !important ;margin-left: 15px !important;
+}
+.container{
+    margin-left: 0px; margin-right: 0px;
+}
+.panel-list-body {overflow-x:auto;}
+.pagination >.currentPage> a {
+    background-color: #428bca;
+    border-color: #428bca;
+    color: #fff;
+    cursor: default;
+    z-index: 2;
+}
+.pagination{
+    margin: 0px;
+}
+.pager-header{
+    margin: 0px 10px 10px 0px;
+}
+.label-fix{
+    padding-right: 5px;
+    text-align: right;
+    width: 120px;
+}
+.form-control {
+      width: 73%;
+ }
+.panel{
+    margin: 0 0 0 60px;
+}
+.alert-warning-message{
+    width: 1080px;
+    margin-left:75px;
+}
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th{word-break: keep-all;white-space:nowrap;}

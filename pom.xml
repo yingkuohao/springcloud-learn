@@ -20,6 +20,7 @@
         <module>hytrix</module>
         <module>zuul</module>
         <module>tddl-test</module>
+        <module>websocket</module>
     </modules>
 
     <parent>
