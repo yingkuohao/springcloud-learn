@@ -19,7 +19,7 @@
 </body>
 
 <SCRIPT LANGUAGE="JavaScript">
-
+    var ws = null;
     var zTreeObj;
     // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
     var setting = {
@@ -31,7 +31,7 @@
         async: {
             enable: true,
             url: "/log/ajax/getCrResources",
-            autoParam: ["id", "type"],
+            autoParam: ["id", "name"],
             type: "post"
         },
         callback: {
@@ -51,7 +51,7 @@
 
     $(document).ready(function() {
         // 指定websocket路径
-        var ws = new WebSocket('ws://localhost:7081/logls');
+         ws = new WebSocket('ws://localhost:7081/logls');
     /*    ws.onopen = function() {
             log('Info: connection opened.');
         };
@@ -70,24 +70,8 @@
 
     // 以表格的形式展示所点击结点的数据
     function clickNode(event, treeId, treeNode) {
-        var type = treeNode.type;
-        if (currTable != null) {
-            remoteRowAndHide(currTable);
-            currTable = null;
-        }
-        if (type == 1) { // 销售代表
-            currTable = document.getElementById('srTable');
-            createSRRow(currTable, treeNode);
-            currTable.style.display = 'table';
-        } else if (type == 2) { // 门店
-            currTable = document.getElementById('storeTable');
-            createStoreRow(currTable, treeNode);
-            currTable.style.display = 'table';
-        } else if (type == 3) { // 终端
-            currTable = document.getElementById('terminalTable');
-            createTerminalRow(currTable, treeNode);
-            currTable.style.display = 'table';
-        }
+        var name = treeNode.name;
+        ws.send(name);
     }
 
 </script>

@@ -1,5 +1,6 @@
 package com.taobao.tail.samples.websocket.echo;
 
+import com.taobao.tail.service.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -22,6 +24,9 @@ public class EchoLogLsHandler extends TextWebSocketHandler {
 
 
     @Autowired
+    private LogService logService;
+
+    @Autowired
     public EchoLogLsHandler(EchoService echoService) {
         this.echoService = echoService;
     }
@@ -29,16 +34,7 @@ public class EchoLogLsHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
-        Process process = Runtime.getRuntime().exec("ls /Users/chengjing/alicpaccount/logs");
-        InputStream inputStream = process.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String logs = "";
-        String line;
-        while ((line = reader.readLine()) != null) {
-            // 将实时日志通过WebSocket发送给客户端，给每一行添加一个HTML换行
-            logger.info("line=" + line);
-            logs += (line + "\r\n");
-        }
+        String logs = logService.getLogs();
 
         logger.info("logs dir=" + logs);
 
@@ -46,5 +42,6 @@ public class EchoLogLsHandler extends TextWebSocketHandler {
 //        session.sendMessage(new TextMessage(echoMessage));
         session.sendMessage(new TextMessage(logs));
     }
+
 
 }
