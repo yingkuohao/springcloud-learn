@@ -2,4 +2,5 @@
 
 config:
   log:
-    logBaseDir: "/Users/chengjing/alicpaccount/logs"
+    logBaseDir: "/Users/chengjing/logs"
+#    logBaseDir: "/Users/chengjing/alicpaccount/logs"

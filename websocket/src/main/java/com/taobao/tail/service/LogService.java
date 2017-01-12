@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,6 +35,9 @@ public class LogService {
                 logger.error("log dir is blank!");
                 return null;
             }
+
+
+
             Process process = Runtime.getRuntime().exec("ls " + logBaseDir);
             inputStream = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));

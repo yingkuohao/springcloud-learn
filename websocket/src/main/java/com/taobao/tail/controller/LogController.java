@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.tail.config.LogConfig;
 import com.taobao.tail.consts.LogConsts;
+import com.taobao.tail.consts.LogVO;
 import com.taobao.tail.samples.websocket.echo.EchoLogLsHandler;
 import com.taobao.tail.service.LogService;
 import org.apache.commons.lang.ArrayUtils;
@@ -17,6 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/log")
@@ -70,13 +77,13 @@ public class LogController {
      */
     @RequestMapping(value = "/ajax/getCrResources", method = RequestMethod.POST)
     @ResponseBody
-    public String getCrResource(Long id, String name, @RequestParam("logBaseDir") String logBaseDir) {
+    public String getCrResource(Long id, String name, @RequestParam("logBaseDir") String logBaseDir, String wholePath) {
         JSONArray jsonArray = new JSONArray();
         if (StringUtils.isBlank(logBaseDir)) {
             logger.error("log dir is blank!");
             return jsonArray.toString();
         }
-        String logFiles = logService.getLogs(logBaseDir);
+  /*      String logFiles = logService.getLogs(logBaseDir);
         if (logFiles == null) {
             logger.error("logFiles is empty,logBaseDir=", logBaseDir);
             return jsonArray.toString();
@@ -89,6 +96,62 @@ public class LogController {
             jsonObject.put("name", loglsStrs[i]);
             jsonArray.add(jsonObject);
         }
-        return jsonArray.toString();
+
+        return jsonArray.toString();      */
+      /*  if(id>0&&! "全部".equals(name))  {
+            //非根节点
+            logBaseDir+
+        }*/
+        if (wholePath != null) {
+            return getChildFile(wholePath);
+        }
+        return getChildFile(logBaseDir);
     }
+
+    public String getChildFile(String baseDir) {
+        try {
+            List<LogVO> list = new ArrayList<LogVO>();
+            final int[] i = {1};
+            Files.list(Paths.get(baseDir)).forEach(n -> {
+                try {
+                    if (!Files.isHidden(n)) {
+
+                        LogVO logVO = new LogVO();
+                        logVO.setId(i[0]++);
+                        String name = n.getFileName().toString();
+                        logVO.setName(name);
+                        logVO.setFile(n.toFile().isFile());
+                        logVO.setIsParent(n.toFile().isDirectory());
+                        logVO.setWholePath(baseDir + "/" + name);
+                        list.add(logVO);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+            String logDirs = JSONObject.toJSONString(list);
+            logger.info("jsonArray={}", logDirs);
+            return logDirs;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static void main(String[] args) {
+        String s = "/Users/chengjing/logs";
+        try {
+            Files.list(Paths.get(s))
+                    .filter(Files::isDirectory)
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LogController logController = new LogController();
+        String ss = logController.getChildFile(s);
+        System.out.println("ss=" + ss);
+    }
+
+
 }

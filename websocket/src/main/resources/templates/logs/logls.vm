@@ -36,7 +36,7 @@
         async: {
             enable: true,
             url: "/log/ajax/getCrResources?logBaseDir="+$('#logBaseDir').val(),
-            autoParam: ["id", "name"],
+            autoParam: ["id", "name","wholePath"],
             type: "post"
         },
         callback: {
@@ -83,10 +83,9 @@
     var tailLogWs = null;
     // 以表格的形式展示所点击结点的数据
     function clickNode(event, treeId, treeNode) {
-        var name = treeNode.name;
 //        tailLogWs = new WebSocket('ws://localhost:7081/logtail');
         tailLogWs = new WebSocket(wsUrl + '/logtail');
-        tailLogWs.send($('#logBaseDir').val() + "/" + name);
+        tailLogWs.send( treeNode.wholePath);
         tailLogWs.onmessage = function(event) {
             // 接收服务端的实时日志并添加到HTML页面中
             $("#log-container div").append(event.data);
