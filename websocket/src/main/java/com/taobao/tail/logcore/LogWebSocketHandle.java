@@ -8,7 +8,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.io.InputStream;
 
-@ServerEndpoint("/log")
+@ServerEndpoint("/logdetail")
 public class LogWebSocketHandle {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

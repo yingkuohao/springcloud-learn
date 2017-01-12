@@ -16,7 +16,7 @@
     var websocket;
     $(document).ready(function() {
         // 指定websocket路径
-        websocket = new WebSocket('ws://localhost:8080/log');
+        websocket = new WebSocket('ws://localhost:7081/log/logdetail');
         websocket.onopen = function() {
             websocket.send("Test!")
         };

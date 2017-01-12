@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 /**
  * 日志列表handler
  */
-@ServerEndpoint("/logls")
+//@ServerEndpoint("/logls")
 public class LogLsHandler {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

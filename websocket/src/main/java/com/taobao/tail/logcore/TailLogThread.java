@@ -13,7 +13,7 @@ public class TailLogThread extends Thread {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private BufferedReader reader;
+        private BufferedReader reader;
     private Session session;
 
     public TailLogThread(InputStream in, Session session) {

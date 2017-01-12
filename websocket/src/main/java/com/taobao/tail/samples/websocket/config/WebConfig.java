@@ -1,8 +1,10 @@
 package com.taobao.tail.samples.websocket.config;
 
+import com.taobao.tail.logcore.LogWebSocketHandle;
 import com.taobao.tail.samples.websocket.echo.DefaultEchoService;
 import com.taobao.tail.samples.websocket.echo.EchoLogLsHandler;
 import com.taobao.tail.samples.websocket.echo.EchoWebSocketHandler;
+import com.taobao.tail.samples.websocket.echo.TailLogHandler;
 import com.taobao.tail.samples.websocket.snake.SnakeWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,7 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
         registry.addHandler(echoLogLsHandler(), "/logls");        //注册日志ls的handler
+        registry.addHandler(tailLogHandler(), "/logtail");        //注册日志ls的handler
 
         registry.addHandler(echoWebSocketHandler(), "/echo");
         registry.addHandler(snakeWebSocketHandler(), "/snake");
@@ -41,6 +44,11 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
     @Bean
     public WebSocketHandler echoLogLsHandler() {
         return new EchoLogLsHandler(echoService());
+    }
+
+    @Bean
+    public WebSocketHandler tailLogHandler() {
+        return new TailLogHandler(echoService());
     }
 
     @Bean

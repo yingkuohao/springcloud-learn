@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/log/")
+@RequestMapping("/log")
 public class LogController {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -42,6 +42,11 @@ public class LogController {
         return "logs/logls";
     }
 
+    @RequestMapping("/page")
+     public String page(Model model) {
+         logger.info("page ok");
+         return "logs/page";
+     }
     @Autowired
     private LogService logService;
 
