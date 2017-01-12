@@ -2,6 +2,7 @@ package com.taobao.tail.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.taobao.tail.config.LogConfig;
 import com.taobao.tail.consts.LogConsts;
 import com.taobao.tail.samples.websocket.echo.EchoLogLsHandler;
 import com.taobao.tail.service.LogService;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class LogController {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    LogConfig logConfig;
 
     @RequestMapping("/log")
     public String log(Model model) {
@@ -39,9 +42,12 @@ public class LogController {
 
     @RequestMapping("/logls")
     public String logls(Model model) {
-        logger.info("logls ok");
 
-        String logBaseDir = "/Users/chengjing/alicpaccount/logs";
+//        String logBaseDir = "/Users/chengjing/alicpaccount/logs";
+
+        String logBaseDir = logConfig.getLogBaseDir();
+        logger.info("logls ok,logBaseDir={}", logBaseDir);
+
         model.addAttribute("logBaseDir", logBaseDir);
         return "logs/logls";
     }

@@ -1,0 +1,4 @@
+
+config:
+  log:
+    logBaseDir: "/home/admin/logs"

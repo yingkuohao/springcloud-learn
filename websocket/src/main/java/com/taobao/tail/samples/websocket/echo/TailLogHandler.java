@@ -71,6 +71,7 @@ public class TailLogHandler extends TextWebSocketHandler {
                         }
                     };
                     new Thread(runnable).start();
+                    //yingkhtodo:desc:线程要定时关闭,比如1分钟不操作
                 }
             }
 
