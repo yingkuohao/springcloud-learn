@@ -9,11 +9,6 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 /**
  * Echo messages by implementing a Spring {@link WebSocketHandler} abstraction.
  */
@@ -33,8 +28,8 @@ public class EchoLogLsHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
-        String logs = logService.getLogs();
+        String logBaseDir = "/Users/chengjing/alicpaccount";
+        String logs = logService.getLogs(logBaseDir);
 
         logger.info("logs dir=" + logs);
 

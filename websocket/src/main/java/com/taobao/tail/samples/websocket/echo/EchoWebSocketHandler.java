@@ -1,5 +1,6 @@
 package com.taobao.tail.samples.websocket.echo;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,13 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
+        String payload = message.getPayload();
+            if (StringUtils.isNotBlank(payload)) {
+                logger.info("message={}", payload);
+                if(!payload.contains("logs"))    {
+                    logger.error("log path is not correct!");
+                }
+            }
         Process process = Runtime.getRuntime().exec("ls /Users/chengjing/alicpaccount/logs");
         InputStream inputStream = process.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -42,7 +49,7 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
         logger.info("logs dir=" + logs);
 
-        String echoMessage = this.echoService.getMessage(message.getPayload());
+        String echoMessage = this.echoService.getMessage(payload);
 //        session.sendMessage(new TextMessage(echoMessage));
         session.sendMessage(new TextMessage(logs));
     }

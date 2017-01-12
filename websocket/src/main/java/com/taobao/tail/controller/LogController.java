@@ -1,4 +1,4 @@
-package com.taobao.tail.config;
+package com.taobao.tail.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -39,14 +40,18 @@ public class LogController {
     @RequestMapping("/logls")
     public String logls(Model model) {
         logger.info("logls ok");
+
+        String logBaseDir = "/Users/chengjing/alicpaccount/logs";
+        model.addAttribute("logBaseDir", logBaseDir);
         return "logs/logls";
     }
 
     @RequestMapping("/page")
-     public String page(Model model) {
-         logger.info("page ok");
-         return "logs/page";
-     }
+    public String page(Model model) {
+        logger.info("page ok");
+        return "logs/page";
+    }
+
     @Autowired
     private LogService logService;
 
@@ -54,15 +59,24 @@ public class LogController {
      * 异步获得资源（销售代表，门店，终端）
      *
      * @param id   资源ID
-     * @param type 0为根结点，1为销售代表，2为门店，3为终端
+     * @param name log文件名称
      * @return
      */
     @RequestMapping(value = "/ajax/getCrResources", method = RequestMethod.POST)
     @ResponseBody
-    public String getCrResource(Long id, Integer type) {
-        String s = logService.getLogs();
-        String[] loglsStrs = s.split(LogConsts.prefix);
-        JSONArray jsonArray=new JSONArray();
+    public String getCrResource(Long id, String name, @RequestParam("logBaseDir") String logBaseDir) {
+        JSONArray jsonArray = new JSONArray();
+        if (StringUtils.isBlank(logBaseDir)) {
+            logger.error("log dir is blank!");
+            return jsonArray.toString();
+        }
+        String logFiles = logService.getLogs(logBaseDir);
+        if (logFiles == null) {
+            logger.error("logFiles is empty,logBaseDir=", logBaseDir);
+            return jsonArray.toString();
+        }
+
+        String[] loglsStrs = logFiles.split(LogConsts.prefix);
         for (int i = 0; i < loglsStrs.length; i++) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", i);

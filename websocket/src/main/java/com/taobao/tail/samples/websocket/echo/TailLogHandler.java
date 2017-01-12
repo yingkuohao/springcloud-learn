@@ -2,6 +2,7 @@ package com.taobao.tail.samples.websocket.echo;
 
 import com.taobao.tail.logcore.TailLogThread;
 import com.taobao.tail.service.LogService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,37 +38,45 @@ public class TailLogHandler extends TextWebSocketHandler {
 
         try {
             logger.info("log onopen" + session.getId());
-            System.out.println("logopen");
-            // 执行tail -f命令
-            //			process = Runtime.getRuntime().exec("tail -f /var/log/syslog");
-
-
-            // 一定要启动新的线程，防止InputStream阻塞处理WebSocket的线程
-            Runnable runnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    String line;
-                    Process process;
-                    final InputStream inputStream;
-                    logger.info("logtail run");
-                    try {
-                        process = Runtime.getRuntime().exec("tail -f /Users/chengjing/alicpaccount/logs/alicp-account-cuntao.log");
-                        inputStream = process.getInputStream();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                        while ((line = reader.readLine()) != null) {
-                            // 将实时日志通过WebSocket发送给客户端，给每一行添加一个HTML换行
-                            logger.info("line=" + line);
-                            session.sendMessage(new TextMessage(line + "<br>"));
+            String payload = message.getPayload();
+            if (StringUtils.isNotBlank(payload)) {
+                logger.info("message={}", payload);
+                //日志路径不包括log的话,直接return.
+                if (!payload.contains("log")) {
+                    logger.error("log path is not correct!");
+                    session.sendMessage(new TextMessage("log path is not correct!"));
+                } else {
+//                    final String logPath = "/Users/chengjing/alicpaccount/logs/alicp-account-cuntao.log";
+                    String baseDir = "";
+                    final String logPath = baseDir + payload;
+                    // 一定要启动新的线程，防止InputStream阻塞处理WebSocket的线程
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            String line;
+                            logger.info("logtail run,logPath={}", logPath);
+                            try {
+                                // 执行tail -f命令
+                                Process process = Runtime.getRuntime().exec("tail -f " + logPath);
+                                InputStream inputStream = process.getInputStream();
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                                while ((line = reader.readLine()) != null) {
+                                    // 将实时日志通过WebSocket发送给客户端，给每一行添加一个HTML换行
+                                    logger.info("line=" + line);
+                                    session.sendMessage(new TextMessage(line + "<br>"));
+                                }
+                            } catch (IOException e) {
+                                logger.error("tail log error,e={}", e);
+                            }
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    };
+                    new Thread(runnable).start();
                 }
-            };
-            new Thread(runnable).start();
+            }
+
+
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("handle taillog error,e={}", e);
         }
     }
 

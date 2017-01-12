@@ -1,12 +1,12 @@
 package com.taobao.tail.service;
 
 import com.taobao.tail.consts.LogConsts;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -23,12 +23,16 @@ import java.io.InputStreamReader;
 public class LogService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public String getLogs() {
+    public String getLogs(String logBaseDir) {
         String logs = "";
         InputStream inputStream = null;
         try {
-
-            Process process = Runtime.getRuntime().exec("ls /Users/chengjing/alicpaccount/logs");
+//            String s = "/Users/chengjing/alicpaccount/logs";
+            if (StringUtils.isBlank(logBaseDir)) {
+                logger.error("log dir is blank!");
+                return null;
+            }
+            Process process = Runtime.getRuntime().exec("ls " + logBaseDir);
             inputStream = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
