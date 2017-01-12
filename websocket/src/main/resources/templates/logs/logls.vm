@@ -9,11 +9,11 @@
 </style>
 <body>
 
-    <div style="display:inline-block;overflow:auto;width:300px;height:600px;margin-right:30px;background-color:#f5f5f5">
+    <div style="display:inline-block;overflow:auto;width:30%;float:left;height:600px;margin-right:30px;background-color:#f5f5f5">
         <ul id="crTree" class="ztree"></ul>
     </div>
 
-    <div id="log-container" style="height: 450px; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
+    <div id="log-container" style="width: 65%; float:left; height:600px; overflow-x: auto; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
         <div>
             <button type="button" class="tooltip-query btn btn-warning" type="button" id="sendMsg">发送消息</button>
         </div>
