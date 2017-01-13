@@ -49,6 +49,7 @@ public class RemoteShellTool {
     public boolean login() throws IOException {
         conn = new Connection(ipAddr);
         conn.connect(); // 连接
+//        conn. authenticateWithPublicKey();
         return conn.authenticateWithPassword(userName, password); // 认证
     }
 
