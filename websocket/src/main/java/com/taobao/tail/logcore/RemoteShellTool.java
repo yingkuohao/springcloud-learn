@@ -1,13 +1,11 @@
 package com.taobao.tail.logcore;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.Session;
+import com.taobao.tail.config.LogConfig;
 import com.taobao.tail.consts.LogConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +38,32 @@ public class RemoteShellTool {
         }
     }
 
+    public RemoteShellTool(String ipAddr) {
+        this.ipAddr = ipAddr;
+    }
+
+    public RemoteShellTool() {
+    }
+
+    public static Connection getConn(String ipAddr, LogConfig logConfig) throws IOException {
+        RemoteShellTool remoteShellTool = new RemoteShellTool(ipAddr);
+        return remoteShellTool.loginByKeygen(logConfig.getUserName(), logConfig.getKeyGenPath(), logConfig.getPwd());
+    }
+
+    /**
+     * @param ipAddr
+     * @param keyGenPath
+     * @param userName
+     * @param pwd
+     * @return
+     * @throws IOException
+     */
+    public static Connection getConn(String ipAddr, String keyGenPath, String userName, String pwd) throws IOException {
+        RemoteShellTool remoteShellTool = new RemoteShellTool(ipAddr);
+        return remoteShellTool.loginByKeygen(userName, keyGenPath, pwd);
+    }
+
+
     /**
      * 登录远程Linux主机
      *
@@ -49,8 +73,21 @@ public class RemoteShellTool {
     public boolean login() throws IOException {
         conn = new Connection(ipAddr);
         conn.connect(); // 连接
-//        conn. authenticateWithPublicKey();
         return conn.authenticateWithPassword(userName, password); // 认证
+    }
+
+    /**
+     * 登录远程Linux主机
+     *
+     * @return
+     * @throws IOException
+     */
+    public Connection loginByKeygen(String userName, String keyGenPath, String pwd) throws IOException {
+        conn = new Connection(ipAddr);
+        conn.connect(); // 连接
+        File file = new File(keyGenPath);
+        boolean isloged = conn.authenticateWithPublicKey(userName, file, pwd);
+        return isloged ? conn : null;
     }
 
     /**
@@ -73,6 +110,7 @@ public class RemoteShellTool {
         }
 
     }
+
 
     /**
      * 执行Shell脚本或命令
@@ -127,9 +165,29 @@ public class RemoteShellTool {
         return sb.toString();
     }
 
+    public String getIpAddr() {
+        return ipAddr;
+    }
+
+    public void setIpAddr(String ipAddr) {
+        this.ipAddr = ipAddr;
+    }
+
     public static void main(String[] args) {
+        RemoteShellTool remoteShellTool1 = new RemoteShellTool();
+//        String ipAddr = "10.1.6.202";
+        String ipAddr = "101.201.233.247";
+        remoteShellTool1.setIpAddr(ipAddr);
+        try {
+//            boolean isLogin = remoteShellTool1.loginByKeygen("uuzz1", "/Users/chengjing/.ssh/id_rsa", "kuohao");
+            Connection isLogin = remoteShellTool1.loginByKeygen("root", "/Users/chengjing/.ssh/id_rsa", "kuohao");
+            System.out.println("islogin=" + isLogin);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         RemoteShellTool remoteShellTool = new RemoteShellTool("101.201.233.247", "root", "Lottery-2016", "UTF-8");
-        String ls = "ls /root/alicpjkc/logs";
+        String ls = "ls -al /root/alicpjkc/logs";
         String s = remoteShellTool.exec(ls);
         System.out.println("s-=" + s);
         String cmd = "tail -f /root/alicpjkc/logs/jkc-crm.log";

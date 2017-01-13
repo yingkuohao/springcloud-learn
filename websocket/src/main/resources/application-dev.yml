@@ -2,5 +2,8 @@
 
 config:
   log:
-    logBaseDir: "/root/alicpjkc/logs"
+    logBaseDir: "/root/alicpjkc"
+    keyGenPath:    "/Users/chengjing/.ssh/id_rsa"
+    userName:   "root"
+    pwd:    "kuohao"
 #    logBaseDir: "/Users/chengjing/alicpaccount/logs"

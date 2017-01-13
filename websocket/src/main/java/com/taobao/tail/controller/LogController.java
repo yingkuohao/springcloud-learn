@@ -71,8 +71,6 @@ public class LogController {
     private LogService logService;
 
     /**
-     * 异步获得资源（销售代表，门店，终端）
-     *
      * @param id   资源ID
      * @param name log文件名称
      * @return
@@ -91,7 +89,8 @@ public class LogController {
         }
         //return getChildFile(logBaseDir);
         String ip = "101.201.233.247";         //yingkhtodo:desc:这里是写死的ip,需要动态
-        return getFileByIp(ip, logBaseDir);
+//        return getFileByIp(ip, logBaseDir);
+        return logService.getAllLogFiles(ip, logBaseDir);
         //yingkhtodo:desc:根据服务器ip和用户名密码,获取日志路径
     }
 
