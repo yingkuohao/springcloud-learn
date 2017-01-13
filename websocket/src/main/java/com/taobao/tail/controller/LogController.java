@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.taobao.tail.config.LogConfig;
 import com.taobao.tail.consts.LogConsts;
 import com.taobao.tail.consts.LogVO;
+import com.taobao.tail.consts.ServerVO;
 import com.taobao.tail.samples.websocket.echo.EchoLogLsHandler;
 import com.taobao.tail.service.LogService;
 import org.apache.commons.lang.ArrayUtils;
@@ -24,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/log")
@@ -85,11 +87,24 @@ public class LogController {
         }
 
         if (wholePath != null) {
-            return getChildFile(wholePath);
+            logBaseDir = wholePath;
         }
-        return getChildFile(logBaseDir);
+        //return getChildFile(logBaseDir);
+        String ip =  "101.201.233.247";
+        return getFileByIp(ip, logBaseDir);
         //yingkhtodo:desc:根据服务器ip和用户名密码,获取日志路径
     }
+
+
+    public String getFileByIp(String ip, String logDir) {
+
+        Map<String, ServerVO> serverMap = logService.getServerMap();
+        ServerVO serverVO = serverMap.get(ip);
+
+        return logService.getSShLogs(ip, serverVO.getUserName(), serverVO.getPwd(), logDir);
+
+    }
+
 
     public String getChildFile(String baseDir) {
         try {

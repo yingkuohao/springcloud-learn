@@ -1,8 +1,7 @@
 package com.taobao.tail.samples.websocket.echo;
 
-import com.taobao.tail.logcore.TailLogThread;
 import com.taobao.tail.service.LogService;
-import com.taobao.tail.service.RemoteShellTool;
+import com.taobao.tail.logcore.RemoteShellTool;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +52,12 @@ public class TailLogHandler extends TextWebSocketHandler {
 //                    runLocal(session, logPath);
                     //2.通过登录远程机器,ssh的方式来执行linux指令
                     RemoteShellTool remoteShellTool = new RemoteShellTool("101.201.233.247", "root", "Lottery-2016", "UTF-8");
-                    String cmd = "tail -f /root/alicpjkc/logs/jkc-crm.log";
+                    String testlog="/root/alicpjkc/logs/jkc-crm.log";
+                    String cmd = "tail -f " + logPath;
                     remoteShellTool.exec1(cmd, session);
                     //yingkhtodo:desc:线程要定时关闭,比如1分钟不操作
                 }
             }
-
 
         } catch (Exception e) {
             logger.error("handle taillog error,e={}", e);

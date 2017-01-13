@@ -1,23 +1,15 @@
-package com.taobao.tail.logcore;
+package com.taobao.tail.samples.websocket.endpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
-/**
- * 日志列表handler
- */
-//@ServerEndpoint("/logls")
-public class LogLsHandler {
+@ServerEndpoint("/logdetail")
+public class LogWebSocketHandle {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Process process;
@@ -29,10 +21,11 @@ public class LogLsHandler {
     @OnOpen
     public void onOpen(Session session) {
         try {
-            logger.info("logls onopen");
+            logger.info("log onopen" + session.getId());
+            System.out.println("logopen");
             // 执行tail -f命令
 //			process = Runtime.getRuntime().exec("tail -f /var/log/syslog");
-            process = Runtime.getRuntime().exec("ls /Users/chengjing/alicpaccount/logs");
+            process = Runtime.getRuntime().exec("tail -f /Users/chengjing/alicpaccount/logs/alicp-account-cuntao.log");
             inputStream = process.getInputStream();
 
             // 一定要启动新的线程，防止InputStream阻塞处理WebSocket的线程
@@ -43,13 +36,19 @@ public class LogLsHandler {
         }
     }
 
+    @OnMessage
+    public void onMsg(Session session, String msg) {
+        logger.info("log onMsg=" + msg);
+        System.out.println("" + session.getUserProperties());
+    }
+
     /**
      * WebSocket请求关闭
      */
     @OnClose
     public void onClose() {
         try {
-            logger.info("logls onClose");
+            logger.info("logls onclose");
             if (inputStream != null)
                 inputStream.close();
         } catch (Exception e) {

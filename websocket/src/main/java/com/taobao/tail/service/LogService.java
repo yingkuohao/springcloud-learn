@@ -7,6 +7,7 @@ import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.sftp.SftpFile;
 import com.taobao.tail.consts.LogConsts;
 import com.taobao.tail.consts.LogVO;
+import com.taobao.tail.consts.ServerVO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +33,31 @@ import java.util.List;
 public class LogService {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+
+  private  Map<String, List<ServerVO>> appMap = new HashMap<String, List<ServerVO>>();
+
+    private   Map<String, ServerVO> serverMap = new HashMap<String, ServerVO>();
+
+    @PostConstruct
+    public void init() {
+        String ip = "101.201.233.247";
+        ServerVO serverVO = new ServerVO(ip, "root", "Lottery-2016");
+        serverMap.put(ip, serverVO);
+
+        String appName = "jkc-crm";
+        List<ServerVO> serverVOList = new ArrayList<ServerVO>();
+        serverVOList.add(serverVO);
+        appMap.put(appName, serverVOList);
+    }
+
+    public Map<String, List<ServerVO>> getAppMap() {
+        return appMap;
+    }
+
+    public Map<String, ServerVO> getServerMap() {
+        return serverMap;
+    }
+
     public String getLogs(String logBaseDir) {
         String logs = "";
         InputStream inputStream = null;
@@ -39,7 +67,6 @@ public class LogService {
                 logger.error("log dir is blank!");
                 return null;
             }
-
 
             Process process = Runtime.getRuntime().exec("ls " + logBaseDir);
             inputStream = process.getInputStream();
@@ -65,6 +92,16 @@ public class LogService {
         return logs;
     }
 
+
+    /**
+     * 通过ssh 连接远程服务器
+     *
+     * @param ip
+     * @param user
+     * @param password
+     * @param logBaseDir
+     * @return
+     */
     public String getSShLogs(String ip, String user, String password, String logBaseDir) {
         SshClient client = new SshClient();
         try {

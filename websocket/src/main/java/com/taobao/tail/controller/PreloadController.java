@@ -1,4 +1,4 @@
-package com.taobao.tail.config;
+package com.taobao.tail.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

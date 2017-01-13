@@ -1,4 +1,4 @@
-package com.taobao.tail.service;
+package com.taobao.tail.logcore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.Session;
 import com.taobao.tail.consts.LogConsts;
-import com.taobao.tail.logcore.TailfTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
@@ -64,9 +63,9 @@ public class RemoteShellTool {
         String result = "";
         try {
             if (this.login()) {
-                TailfTask tailfTask = new TailfTask(cmds, conn,webSocketSession);
+                TailfTask tailfTask = new TailfTask(cmds, conn, webSocketSession);
                 Thread thread = new Thread(tailfTask);
-                thread.start();
+                thread.start();  //yingkhtodo:desc:线程如何关闭,在websocket close的时候关闭
             }
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -93,10 +92,11 @@ public class RemoteShellTool {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     // 将实时日志通过WebSocket发送给客户端，给每一行添加一个HTML换行
-                    logger.info("line=" + line);
+//                    logger.info("line=" + line);
                     logs += (line + LogConsts.prefix);
                 }
                 logger.info("logs=" + logs);
+                result = logs;
 //                result = this.processStdout(in, this.charset);
                 conn.close();
             }
@@ -128,9 +128,10 @@ public class RemoteShellTool {
 
     public static void main(String[] args) {
         RemoteShellTool remoteShellTool = new RemoteShellTool("101.201.233.247", "root", "Lottery-2016", "UTF-8");
+        String ls = "ls /root/alicpjkc/logs";
+        String s = remoteShellTool.exec(ls);
+        System.out.println("s-=" + s);
         String cmd = "tail -f /root/alicpjkc/logs/jkc-crm.log";
-//        String s = remoteShellTool.exec(cmd);
-//        System.out.println("s-=" + s);
-     remoteShellTool.exec1(cmd,null);
+        remoteShellTool.exec1(cmd, null);
     }
 }

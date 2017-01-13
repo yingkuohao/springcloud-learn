@@ -1,4 +1,4 @@
-package com.taobao.tail.logcore;
+package com.taobao.tail.samples.websocket.endpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

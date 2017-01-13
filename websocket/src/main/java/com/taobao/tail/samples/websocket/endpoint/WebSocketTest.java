@@ -1,4 +1,4 @@
-package com.taobao.tail.logcore;
+package com.taobao.tail.samples.websocket.endpoint;
 
 /**
  * Created by IntelliJ IDEA.
