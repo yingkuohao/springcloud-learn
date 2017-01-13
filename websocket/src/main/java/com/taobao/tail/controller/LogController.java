@@ -90,7 +90,7 @@ public class LogController {
             logBaseDir = wholePath;
         }
         //return getChildFile(logBaseDir);
-        String ip =  "101.201.233.247";
+        String ip = "101.201.233.247";         //yingkhtodo:desc:这里是写死的ip,需要动态
         return getFileByIp(ip, logBaseDir);
         //yingkhtodo:desc:根据服务器ip和用户名密码,获取日志路径
     }
