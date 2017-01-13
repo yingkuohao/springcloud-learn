@@ -17,7 +17,7 @@ import org.springframework.web.socket.WebSocketSession;
  * Date: 17/1/13
  * Time: 上午9:41
  * CopyRight: taobao
- * Descrption:
+ * Descrption:远程shell工具
  */
 
 public class RemoteShellTool {
@@ -45,6 +45,14 @@ public class RemoteShellTool {
     public RemoteShellTool() {
     }
 
+    /**
+     * 获取一个连接
+     *
+     * @param ipAddr    ip地址
+     * @param logConfig 配置项信息,主要拿keygen路径,用户名,密码
+     * @return
+     * @throws IOException
+     */
     public static Connection getConn(String ipAddr, LogConfig logConfig) throws IOException {
         RemoteShellTool remoteShellTool = new RemoteShellTool(ipAddr);
         return remoteShellTool.loginByKeygen(logConfig.getUserName(), logConfig.getKeyGenPath(), logConfig.getPwd());
@@ -70,7 +78,7 @@ public class RemoteShellTool {
      * @return
      * @throws IOException
      */
-    public boolean login() throws IOException {
+    private boolean login() throws IOException {
         conn = new Connection(ipAddr);
         conn.connect(); // 连接
         return conn.authenticateWithPassword(userName, password); // 认证
@@ -91,14 +99,12 @@ public class RemoteShellTool {
     }
 
     /**
-     * 执行Shell脚本或命令
+     * 执行tail命令
      *
      * @param cmds 命令行序列
      * @return
      */
-    public void exec1(String cmds, WebSocketSession webSocketSession) {
-        InputStream in = null;
-        String result = "";
+    public void execTail(String cmds, WebSocketSession webSocketSession) {
         try {
             if (this.login()) {
                 TailfTask tailfTask = new TailfTask(cmds, conn, webSocketSession);
@@ -173,24 +179,4 @@ public class RemoteShellTool {
         this.ipAddr = ipAddr;
     }
 
-    public static void main(String[] args) {
-        RemoteShellTool remoteShellTool1 = new RemoteShellTool();
-//        String ipAddr = "10.1.6.202";
-        String ipAddr = "101.201.233.247";
-        remoteShellTool1.setIpAddr(ipAddr);
-        try {
-//            boolean isLogin = remoteShellTool1.loginByKeygen("uuzz1", "/Users/chengjing/.ssh/id_rsa", "kuohao");
-            Connection isLogin = remoteShellTool1.loginByKeygen("root", "/Users/chengjing/.ssh/id_rsa", "kuohao");
-            System.out.println("islogin=" + isLogin);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        RemoteShellTool remoteShellTool = new RemoteShellTool("101.201.233.247", "root", "Lottery-2016", "UTF-8");
-        String ls = "ls -al /root/alicpjkc/logs";
-        String s = remoteShellTool.exec(ls);
-        System.out.println("s-=" + s);
-        String cmd = "tail -f /root/alicpjkc/logs/jkc-crm.log";
-        remoteShellTool.exec1(cmd, null);
-    }
 }

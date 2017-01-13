@@ -1,9 +1,7 @@
 package com.taobao.tail.samples.websocket.config;
 
 import com.taobao.tail.samples.websocket.echo.DefaultEchoService;
-import com.taobao.tail.samples.websocket.echo.EchoLogLsHandler;
 import com.taobao.tail.samples.websocket.echo.EchoWebSocketHandler;
-import com.taobao.tail.samples.websocket.echo.TailLogHandler;
 import com.taobao.tail.samples.websocket.snake.SnakeWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +21,6 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
-        registry.addHandler(echoLogLsHandler(), "/logls");        //注册日志ls的handler
-        registry.addHandler(tailLogHandler(), "/logtail");        //注册日志ls的handler
 
         registry.addHandler(echoWebSocketHandler(), "/echo");
         registry.addHandler(snakeWebSocketHandler(), "/snake");
@@ -38,15 +34,6 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
         return new EchoWebSocketHandler(echoService());
     }
 
-    @Bean
-    public WebSocketHandler echoLogLsHandler() {
-        return new EchoLogLsHandler(echoService());
-    }
-
-    @Bean
-    public WebSocketHandler tailLogHandler() {
-        return new TailLogHandler(echoService());
-    }
 
     @Bean
     public WebSocketHandler snakeWebSocketHandler() {
@@ -65,25 +52,4 @@ public class WebConfig extends WebMvcConfigurerAdapter implements WebSocketConfi
         configurer.enable();
     }
 
-
-/*    @Bean(name = "velocityViewResolver")
-      public VelocityLayoutViewResolver getVelocityLayoutViewResolver() {
-          VelocityLayoutViewResolver vr = new VelocityLayoutViewResolver();
-          vr.setCache(true);
-          vr.setPrefix("/templates/");
-          vr.setSuffix(".vm");
-          vr.setLayoutUrl("layout.vm");
-          vr.setContentType("text/html;charset=UTF-8");
-          vr.setExposeSpringMacroHelpers(true);
-          vr.setLayoutKey("layout");
-          vr.setScreenContentKey("screen_content");
-          vr.setDateToolAttribute("dateTool");
-          vr.setNumberToolAttribute("numberTool");
-          vr.setAllowRequestOverride(true);
-          vr.setAllowSessionOverride(true);
-          vr.setExposeRequestAttributes(true);
-          vr.setExposeSessionAttributes(true);
-          vr.setRequestContextAttribute("rc");
-          return vr;
-      }*/
 }

@@ -35,8 +35,8 @@
         },
         async: {
             enable: true,
-            url: "/log/ajax/getCrResources?logBaseDir="+$('#logBaseDir').val(),
-            autoParam: ["id", "name","wholePath"],
+            url: "/log/ajax/getCrResources?logBaseDir=" + $('#logBaseDir').val(),
+            autoParam: ["id", "name", "wholePath"],
             type: "post"
         },
         callback: {
@@ -64,6 +64,7 @@
         // 指定websocket路径
 //        ws = new WebSocket('ws://localhost:7081/logls');
         ws = new WebSocket(wsUrl + '/logls');
+        //这里开一个ws,留着做一些扩展,比如grep之类的
         /*    ws.onopen = function() {
                 log('Info: connection opened.');
             };
@@ -85,7 +86,9 @@
     function clickNode(event, treeId, treeNode) {
 //        tailLogWs = new WebSocket('ws://localhost:7081/logtail');
         tailLogWs = new WebSocket(wsUrl + '/logtail');
-        tailLogWs.send( treeNode.wholePath);
+        tailLogWs.onopen = function() {
+            tailLogWs.send(treeNode.wholePath);
+        }
         tailLogWs.onmessage = function(event) {
             // 接收服务端的实时日志并添加到HTML页面中
             $("#log-container div").append(event.data);

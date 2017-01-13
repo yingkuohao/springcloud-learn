@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +71,7 @@ public class LogService {
 
     /**
      * 根据目标机器的ip和日志地址,获取下边的所有文件
+     * 通过keygen的形式
      *
      * @param ip
      * @param path
@@ -99,7 +102,7 @@ public class LogService {
 //                    logger.info("line=" + line);
                     LogVO logVO = new LogVO();
                     logVO.setId(i++);
-                    String name = line.substring(line.lastIndexOf(" ")+1, line.length()).trim();
+                    String name = line.substring(line.lastIndexOf(" ") + 1, line.length()).trim();
                     logVO.setName(name);
                     if (line.startsWith("d")) {
                         logVO.setFile(false);
@@ -132,7 +135,13 @@ public class LogService {
     }
 
 
-    public String getLogs(String logBaseDir) {
+    /**
+     * 获取本地的日志,
+     *
+     * @param logBaseDir
+     * @return
+     */
+    public String getLogsLocal(String logBaseDir) {
         String logs = "";
         InputStream inputStream = null;
         try {
@@ -149,18 +158,17 @@ public class LogService {
             while ((line = reader.readLine()) != null) {
                 // 将实时日志通过WebSocket发送给客户端，给每一行添加一个HTML换行
                 logger.info("line=" + line);
-
                 logs += (line + LogConsts.prefix);
             }
         } catch (Exception e) {
-            logger.error("getLogs errror", e);
+            logger.error("getLogsLocal errror", e);
         } finally {
             try {
                 logger.info("logls onclose");
                 if (inputStream != null)
                     inputStream.close();
             } catch (Exception e) {
-
+                logger.error("inputStream close error", e);
             }
         }
         return logs;
@@ -168,107 +176,40 @@ public class LogService {
 
 
     /**
-     * 通过ssh 连接远程服务器
-     *
-     * @param ip
-     * @param user
-     * @param password
-     * @param logBaseDir
+     * 遍历一个本地目录,汇总子目录
+     * @param baseDir
      * @return
      */
-    public String getSShLogs(String ip, String user, String password, String logBaseDir) {
-        SshClient client = new SshClient();
+    public String getChildFileLocal(String baseDir) {
         try {
-            client.connect(ip);
-            //设置用户名和密码
-            PasswordAuthenticationClient pwd = new PasswordAuthenticationClient();
-            pwd.setUsername(user);
-            pwd.setPassword(password);
-            int result = client.authenticate(pwd);
-            if (result == AuthenticationProtocolState.COMPLETE) {//如果连接完成
-                System.out.println("===============" + result);
-                List<SftpFile> list = client.openSftpClient().ls(logBaseDir);
-                int i = 0;
-                List<LogVO> logDetails = new ArrayList<LogVO>();
-                for (SftpFile f : list) {
-                    LogVO logVO = new LogVO();
-                    logVO.setId(i++);
-                    String name = f.getFilename();
-                    logVO.setName(name);
-                    logVO.setFile(f.isFile());
-                    logVO.setIsParent(f.isDirectory());
-                    logVO.setWholePath(logBaseDir + "/" + name);
-                    logDetails.add(logVO);
-                }
-                String logDirs = JSONObject.toJSONString(logDetails);
-                logger.info("logDetails={}", logDetails);
-                return logDirs;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    SshClient client = new SshClient();
-
-
-    public void connectToServer() {
-        try {
-            client.connect("101.201.233.247");
-            //设置用户名和密码
-            PasswordAuthenticationClient pwd = new PasswordAuthenticationClient();
-            pwd.setUsername("root");
-            pwd.setPassword("Lottery-2016");
-            int result = client.authenticate(pwd);
-            if (result == AuthenticationProtocolState.COMPLETE) {//如果连接完成
-                System.out.println("===============" + result);
-                List<SftpFile> list = client.openSftpClient().ls("/home/admin/logs/");
-                client.openSessionChannel().executeCommand("tail -f /Users/chengjing/alicpaccount/logs/alicp-account-cuntao.log");
-
-                for (SftpFile f : list) {
-                    System.out.println(f.getFilename());
-                    System.out.println(f.getAbsolutePath());
-                    if (f.getFilename().equals("aliases")) {
-                        OutputStream os = new FileOutputStream("d:/mail/" + f.getFilename());
-                        client.openSftpClient().get("/etc/mail/aliases", os);
-                        //以行为单位读取文件start
-                        File file = new File("d:/mail/aliases");
-                        BufferedReader reader = null;
-                        try {
-                            System.out.println("以行为单位读取文件内容，一次读一整行：");
-                            reader = new BufferedReader(new FileReader(file));
-                            String tempString = null;
-                            int line = 1;//行号
-                            //一次读入一行，直到读入null为文件结束
-                            while ((tempString = reader.readLine()) != null) {
-                                //显示行号
-                                System.out.println("line " + line + ": " + tempString);
-                                line++;
-                            }
-                            reader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (reader != null) {
-                                try {
-                                    reader.close();
-                                } catch (IOException e1) {
-                                }
-                            }
-                        }
-                        //以行为单位读取文件end
+            List<LogVO> list = new ArrayList<LogVO>();
+            final int[] i = {1};
+            Files.list(Paths.get(baseDir)).forEach(n -> {
+                try {
+                    if (!Files.isHidden(n)) {
+                        LogVO logVO = new LogVO();
+                        logVO.setId(i[0]++);
+                        String name = n.getFileName().toString();
+                        logVO.setName(name);
+                        logVO.setFile(n.toFile().isFile());
+                        logVO.setIsParent(n.toFile().isDirectory());
+                        logVO.setWholePath(baseDir + "/" + name);
+                        list.add(logVO);
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
+
+            });
+            String logDirs = JSONObject.toJSONString(list);
+            logger.info("jsonArray={}", logDirs);
+            return logDirs;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "";
     }
 
-    public static void main(String[] args) {
-        LogService logService = new LogService();
-        logService.connectToServer();
-    }
+
+
 }

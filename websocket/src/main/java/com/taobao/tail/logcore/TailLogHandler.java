@@ -1,4 +1,4 @@
-package com.taobao.tail.samples.websocket.echo;
+package com.taobao.tail.logcore;
 
 import com.taobao.tail.service.LogService;
 import com.taobao.tail.logcore.RemoteShellTool;
@@ -22,17 +22,6 @@ import java.io.InputStreamReader;
 public class TailLogHandler extends TextWebSocketHandler {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final EchoService echoService;
-
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    public TailLogHandler(EchoService echoService) {
-        this.echoService = echoService;
-    }
-
     @Override
     public void handleTextMessage(final WebSocketSession session, TextMessage message) throws Exception {
 
@@ -54,7 +43,7 @@ public class TailLogHandler extends TextWebSocketHandler {
                     RemoteShellTool remoteShellTool = new RemoteShellTool("101.201.233.247", "root", "Lottery-2016", "UTF-8");
                     String testlog="/root/alicpjkc/logs/jkc-crm.log";
                     String cmd = "tail -f " + logPath;
-                    remoteShellTool.exec1(cmd, session);
+                    remoteShellTool.execTail(cmd, session);
                     //yingkhtodo:desc:线程要定时关闭,比如1分钟不操作
                 }
             }

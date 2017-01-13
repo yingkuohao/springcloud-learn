@@ -1,14 +1,8 @@
 package com.taobao.tail.controller;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.taobao.tail.config.LogConfig;
-import com.taobao.tail.consts.LogConsts;
-import com.taobao.tail.consts.LogVO;
-import com.taobao.tail.consts.ServerVO;
-import com.taobao.tail.samples.websocket.echo.EchoLogLsHandler;
 import com.taobao.tail.service.LogService;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 @Controller
 @RequestMapping("/log")
 public class LogController {
@@ -34,6 +21,8 @@ public class LogController {
 
     @Autowired
     LogConfig logConfig;
+    @Autowired
+    private LogService logService;
 
     @RequestMapping("/log")
     public String log(Model model) {
@@ -52,8 +41,6 @@ public class LogController {
     @RequestMapping("/logls")
     public String logls(Model model) {
 
-//        String logBaseDir = "/Users/chengjing/alicpaccount/logs";
-
         String logBaseDir = logConfig.getLogBaseDir();
         logger.info("logls ok,logBaseDir={}", logBaseDir);
 
@@ -67,8 +54,6 @@ public class LogController {
         return "logs/page";
     }
 
-    @Autowired
-    private LogService logService;
 
     /**
      * @param id   资源ID
@@ -87,67 +72,9 @@ public class LogController {
         if (wholePath != null) {
             logBaseDir = wholePath;
         }
-        //return getChildFile(logBaseDir);
         String ip = "101.201.233.247";         //yingkhtodo:desc:这里是写死的ip,需要动态
-//        return getFileByIp(ip, logBaseDir);
         return logService.getAllLogFiles(ip, logBaseDir);
         //yingkhtodo:desc:根据服务器ip和用户名密码,获取日志路径
-    }
-
-
-    public String getFileByIp(String ip, String logDir) {
-
-        Map<String, ServerVO> serverMap = logService.getServerMap();
-        ServerVO serverVO = serverMap.get(ip);
-
-        return logService.getSShLogs(ip, serverVO.getUserName(), serverVO.getPwd(), logDir);
-
-    }
-
-
-    public String getChildFile(String baseDir) {
-        try {
-            List<LogVO> list = new ArrayList<LogVO>();
-            final int[] i = {1};
-            Files.list(Paths.get(baseDir)).forEach(n -> {
-                try {
-                    if (!Files.isHidden(n)) {
-
-                        LogVO logVO = new LogVO();
-                        logVO.setId(i[0]++);
-                        String name = n.getFileName().toString();
-                        logVO.setName(name);
-                        logVO.setFile(n.toFile().isFile());
-                        logVO.setIsParent(n.toFile().isDirectory());
-                        logVO.setWholePath(baseDir + "/" + name);
-                        list.add(logVO);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            });
-            String logDirs = JSONObject.toJSONString(list);
-            logger.info("jsonArray={}", logDirs);
-            return logDirs;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public static void main(String[] args) {
-        String s = "/Users/chengjing/logs";
-        try {
-            Files.list(Paths.get(s))
-                    .filter(Files::isDirectory)
-                    .forEach(System.out::println);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        LogController logController = new LogController();
-        String ss = logController.getChildFile(s);
-        System.out.println("ss=" + ss);
     }
 
 

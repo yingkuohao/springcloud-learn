@@ -1,4 +1,4 @@
-package com.taobao.tail.samples.websocket.echo;
+package com.taobao.tail.logcore;
 
 import com.taobao.tail.service.LogService;
 import org.slf4j.Logger;
@@ -15,26 +15,17 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class EchoLogLsHandler extends TextWebSocketHandler {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final EchoService echoService;
-
 
     @Autowired
     private LogService logService;
 
-    @Autowired
-    public EchoLogLsHandler(EchoService echoService) {
-        this.echoService = echoService;
-    }
-
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        //yingkhtodo:desc:暂时测试使用,client端没有发消息过来
         String logBaseDir = "/Users/chengjing/alicpaccount";
-        String logs = logService.getLogs(logBaseDir);
+        String logs = logService.getLogsLocal(logBaseDir);
 
         logger.info("logs dir=" + logs);
-
-        String echoMessage = this.echoService.getMessage(message.getPayload());
-//        session.sendMessage(new TextMessage(echoMessage));
         session.sendMessage(new TextMessage(logs));
     }
 

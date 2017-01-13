@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
  * Date: 17/1/13
  * Time: 上午10:07
  * CopyRight: taobao
- * Descrption:
+ * Descrption:           TailF线程   ,读取tailf的内容
  */
 
 public class TailfTask implements Runnable {
