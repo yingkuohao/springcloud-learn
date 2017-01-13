@@ -1,16 +1,20 @@
 package com.taobao.tail.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.sshtools.j2ssh.SshClient;
+import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
+import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
+import com.sshtools.j2ssh.sftp.SftpFile;
 import com.taobao.tail.consts.LogConsts;
+import com.taobao.tail.consts.LogVO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import javax.annotation.PostConstruct;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +41,6 @@ public class LogService {
             }
 
 
-
             Process process = Runtime.getRuntime().exec("ls " + logBaseDir);
             inputStream = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -60,5 +63,121 @@ public class LogService {
             }
         }
         return logs;
+    }
+
+    public String getSShLogs(String ip, String user, String password, String logBaseDir) {
+        SshClient client = new SshClient();
+        try {
+            client.connect(ip);
+            //设置用户名和密码
+            PasswordAuthenticationClient pwd = new PasswordAuthenticationClient();
+            pwd.setUsername(user);
+            pwd.setPassword(password);
+            int result = client.authenticate(pwd);
+            if (result == AuthenticationProtocolState.COMPLETE) {//如果连接完成
+                System.out.println("===============" + result);
+                List<SftpFile> list = client.openSftpClient().ls(logBaseDir);
+                int i = 0;
+                List<LogVO> logDetails = new ArrayList<LogVO>();
+                for (SftpFile f : list) {
+                    LogVO logVO = new LogVO();
+                    logVO.setId(i++);
+                    String name = f.getFilename();
+                    logVO.setName(name);
+                    logVO.setFile(f.isFile());
+                    logVO.setIsParent(f.isDirectory());
+                    logVO.setWholePath(logBaseDir + "/" + name);
+                    logDetails.add(logVO);
+                }
+                String logDirs = JSONObject.toJSONString(logDetails);
+                logger.info("logDetails={}", logDetails);
+                return logDirs;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    SshClient client = new SshClient();
+
+/*
+    @PostConstruct
+    public void initSShClient() {
+        try {
+            client.connect("101.201.233.247");
+            //设置用户名和密码
+            PasswordAuthenticationClient pwd = new PasswordAuthenticationClient();
+            pwd.setUsername("root");
+            pwd.setPassword("Lottery-2016");
+            int result = client.authenticate(pwd);
+            if (result == AuthenticationProtocolState.COMPLETE) {//如果连接完成
+                System.out.println("===============" + result);
+            }
+        } catch (Exception e) {
+            logger.info("initSShClient error", e);
+        }
+
+    }
+*/
+
+
+    public void connectToServer() {
+        try {
+            client.connect("101.201.233.247");
+            //设置用户名和密码
+            PasswordAuthenticationClient pwd = new PasswordAuthenticationClient();
+            pwd.setUsername("root");
+            pwd.setPassword("Lottery-2016");
+            int result = client.authenticate(pwd);
+            if (result == AuthenticationProtocolState.COMPLETE) {//如果连接完成
+                System.out.println("===============" + result);
+                List<SftpFile> list = client.openSftpClient().ls("/home/admin/logs/");
+                client.openSessionChannel().executeCommand("tail -f /Users/chengjing/alicpaccount/logs/alicp-account-cuntao.log");
+
+                for (SftpFile f : list) {
+                    System.out.println(f.getFilename());
+                    System.out.println(f.getAbsolutePath());
+                    if (f.getFilename().equals("aliases")) {
+                        OutputStream os = new FileOutputStream("d:/mail/" + f.getFilename());
+                        client.openSftpClient().get("/etc/mail/aliases", os);
+                        //以行为单位读取文件start
+                        File file = new File("d:/mail/aliases");
+                        BufferedReader reader = null;
+                        try {
+                            System.out.println("以行为单位读取文件内容，一次读一整行：");
+                            reader = new BufferedReader(new FileReader(file));
+                            String tempString = null;
+                            int line = 1;//行号
+                            //一次读入一行，直到读入null为文件结束
+                            while ((tempString = reader.readLine()) != null) {
+                                //显示行号
+                                System.out.println("line " + line + ": " + tempString);
+                                line++;
+                            }
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (reader != null) {
+                                try {
+                                    reader.close();
+                                } catch (IOException e1) {
+                                }
+                            }
+                        }
+                        //以行为单位读取文件end
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        LogService logService = new LogService();
+        logService.connectToServer();
     }
 }

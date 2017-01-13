@@ -83,29 +83,12 @@ public class LogController {
             logger.error("log dir is blank!");
             return jsonArray.toString();
         }
-  /*      String logFiles = logService.getLogs(logBaseDir);
-        if (logFiles == null) {
-            logger.error("logFiles is empty,logBaseDir=", logBaseDir);
-            return jsonArray.toString();
-        }
 
-        String[] loglsStrs = logFiles.split(LogConsts.prefix);
-        for (int i = 0; i < loglsStrs.length; i++) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", i);
-            jsonObject.put("name", loglsStrs[i]);
-            jsonArray.add(jsonObject);
-        }
-
-        return jsonArray.toString();      */
-      /*  if(id>0&&! "全部".equals(name))  {
-            //非根节点
-            logBaseDir+
-        }*/
         if (wholePath != null) {
             return getChildFile(wholePath);
         }
         return getChildFile(logBaseDir);
+        //yingkhtodo:desc:根据服务器ip和用户名密码,获取日志路径
     }
 
     public String getChildFile(String baseDir) {

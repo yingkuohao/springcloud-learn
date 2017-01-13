@@ -42,5 +42,15 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.8</version>
         </dependency>
+        <dependency>
+          <groupId>sshtools</groupId>
+          <artifactId>j2ssh-core</artifactId>
+          <version>0.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>build210</version>
+        </dependency>
     </dependencies>
 </project>
