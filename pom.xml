@@ -21,6 +21,7 @@
         <module>zuul</module>
         <module>tddl-test</module>
         <module>websocket</module>
+        <module>logapp</module>
     </modules>
 
     <parent>
