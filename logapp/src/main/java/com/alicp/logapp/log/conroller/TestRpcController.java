@@ -1,5 +1,6 @@
 package com.alicp.logapp.log.conroller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alicp.logapp.log.common.LogUtil;
 import com.alicp.logapp.log.service.Provider;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -46,9 +48,19 @@ public class TestRpcController {
     }
 
     @RequestMapping("/testlog")
-    public String testlog() {
+    public String testlo() {
         testConsumer();
         return "success";
+    }
+
+
+    @RequestMapping("/testbiz")
+    public String testbiz() {
+        Map map = LogUtil.getBaseLog();
+        map.put("bizId", 123);
+        map.put("bizInfo", "下单成功");
+        logger.info(JSONObject.toJSONString(map));
+        return "testbiz";
     }
 
     public void testConsumer() {
@@ -56,10 +68,10 @@ public class TestRpcController {
 
         while (isLoop) {
             Random random = new Random();
-            int i = random.nextInt(3);
+            int i = random.nextInt(4);
             String methodName = "method" + i;
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -1,0 +1,1 @@
+ nohup java -jar /home/uuzz/logapp/lib/logapp-1.0-SNAPSHOT.jar >/home/uuzz/logapp/logs/logsapp-stdout.log 2>&1 &

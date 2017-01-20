@@ -24,33 +24,35 @@ public class Provider {
     Random random = new Random();
 
     public void method1() {
-        logger.info(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append("method1").append("|").append("execute").toString());
-        try {
-            Thread.sleep(random.nextInt(1000));
-        } catch (InterruptedException e) {
-            logger.error(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append("method1").append("|").append("timeout").toString());
-            e.printStackTrace();
-        }
+        execute("method1");
     }
 
 
     public void method2() {
-        logger.info(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append("method2").append("|").append("execute").toString());
+        String method2 = "method2";
+        execute(method2);
+    }
+
+    private void execute(String method2) {
+        long begin = System.nanoTime();
+        String logprefix = LogUtil.logPrefix().append(this.getClass().getName()).append("|").append(method2).append("|").toString();
+        logger.info(logprefix + "execute"+"|");
         try {
-            Thread.sleep(random.nextInt(1000));
+            int millis = random.nextInt(100);
+            //小于50打印正常log,否则打印errorlog,用于统计正常,错误数量
+            if (millis > 50) {
+                logger.error(logprefix + "error"+"|");
+            }
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
-            logger.error(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append("method1").append("|").append("timeout").toString());
+            logger.error(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append(method2).append("|").append("timeout").toString());
             e.printStackTrace();
         }
+        logger.info(logprefix + "totalTime"+"|" + (System.nanoTime() - begin)+"|");
     }
 
     public void method3() {
-        logger.info(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append("method3").append("|").append("execute").toString());
-        try {
-            Thread.sleep(random.nextInt(1000));
-        } catch (InterruptedException e) {
-            logger.error(LogUtil.logPrefix().append(this.getClass().getName()).append("|").append("method1").append("|").append("timeout").toString());
-            e.printStackTrace();
-        }
+        execute("method3");
     }
+
 }
