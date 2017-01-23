@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  
-  <property name="LOG_DIR" value="${user.home}/logapp/logs" />
-  <property name="LOGGER_LEVEL" value="info"></property>
-  <property name="ADDITIVITY" value="false"></property>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">  
-    <encoder>  
-      <pattern>  
-        [ %-5level] [%date{yyyy-MM-dd HH:mm:ss}] %logger{96} [%line] - %msg%n  
-      </pattern>  
-      <charset>UTF-8</charset>   
-    </encoder> 
-  </appender>
-  
-  <appender name="defaultAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <File>${LOG_DIR}/logapp.log</File>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <FileNamePattern>${LOG_DIR}/logapp.log.%d{yyyy-MM-dd}</FileNamePattern>
-      <maxHistory>30</maxHistory>         
-    </rollingPolicy>
-    <encoder>
-      <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</Pattern>
-    </encoder>     
-  </appender>  
-  
+    <property name="LOG_DIR" value="${user.home}/logapp/logs"/>
+    <property name="LOGGER_LEVEL" value="info"></property>
+    <property name="ADDITIVITY" value="false"></property>
 
-  
-  <root level="${LOGGER_LEVEL}">   
-    <appender-ref ref="defaultAppender"/> 
-    <appender-ref ref="STDOUT"/>  
-  </root> 
-  
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                [ %-5level] [%date{yyyy-MM-dd HH:mm:ss}] %logger{96} [%line] - %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="defaultAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_DIR}/logapp.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/logapp.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</Pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="jvmAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_DIR}/jvm-monitor.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/jvm-monitor.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <Pattern> %msg %n</Pattern>
+        </encoder>
+    </appender>
+    <logger name="com.alicp.logapp.log.jvm" level="${LOGGER_LEVEL}" additivity="${ADDITIVITY}">
+        <appender-ref ref="jvmAppender"/>
+    </logger>
+
+
+    <root level="${LOGGER_LEVEL}">
+        <appender-ref ref="defaultAppender"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
 </configuration>

@@ -50,6 +50,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <mainClass>com.alicp.logapp.log.boot.LogApplication</mainClass>
                     <!-- do not enable it, this will creats a non standard jar and cause autoconfig to fail -->
                     <executable>false</executable>
                 </configuration>

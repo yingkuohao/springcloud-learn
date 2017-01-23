@@ -56,7 +56,7 @@ public class TestRpcController {
 
     @RequestMapping("/testbiz")
     public String testbiz() {
-        Map map = LogUtil.getBaseLog();
+        Map map = LogUtil.getBaseBizLog();
         map.put("bizId", 123);
         map.put("bizInfo", "下单成功");
         logger.info(JSONObject.toJSONString(map));
