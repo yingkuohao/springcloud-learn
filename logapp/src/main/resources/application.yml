@@ -6,3 +6,5 @@
 server:
   port: 7001
 
+management:
+  port: 7002
