@@ -77,4 +77,9 @@ public class MetricCollector {
             e.printStackTrace();
         }
     }
+
+    public static void main(String[] args) {
+        MetricCollector metricCollector=new MetricCollector();
+        metricCollector.getRemoteMetrics();
+    }
 }
