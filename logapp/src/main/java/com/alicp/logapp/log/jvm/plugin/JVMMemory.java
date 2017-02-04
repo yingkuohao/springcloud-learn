@@ -28,36 +28,47 @@ public class JVMMemory implements JVMMemoryMBean {
     private MemoryPoolMXBean oldGenMxBean;
     private MemoryPoolMXBean edenSpaceMxBean;
     private MemoryPoolMXBean pSSurvivorSpaceMxBean;
+    //jdk8
+    private MemoryPoolMXBean codeCacheMxBean;
+    private MemoryPoolMXBean metaspaceMxBean;
 
-    private JVMMemory(){
+    private JVMMemory() {
         memoryMXBean = ManagementFactory.getMemoryMXBean();
 
         List<MemoryPoolMXBean> list = ManagementFactory.getMemoryPoolMXBeans();
+        list.forEach(System.out::print);
         for (MemoryPoolMXBean item : list) {
             if ("CMS Perm Gen".equals(item.getName()) //
-                || "Perm Gen".equals(item.getName()) //
-                || "PS Perm Gen".equals(item.getName()) //
-                || "G1 Perm Gen".equals(item.getName()) //
-            ) {
+                    || "Perm Gen".equals(item.getName()) //
+                    || "PS Perm Gen".equals(item.getName()) //
+                    || "G1 Perm Gen".equals(item.getName()) //
+                    ) {
                 permGenMxBean = item;
             } else if ("CMS Old Gen".equals(item.getName()) //
-                       || "Tenured Gen".equals(item.getName()) //
-                       || "PS Old Gen".equals(item.getName()) //
-                       || "G1 Old Gen".equals(item.getName()) //
-            ) {
+                    || "Tenured Gen".equals(item.getName()) //
+                    || "PS Old Gen".equals(item.getName()) //
+                    || "G1 Old Gen".equals(item.getName()) //
+                    ) {
                 oldGenMxBean = item;
             } else if ("Par Eden Space".equals(item.getName()) //
-                       || "Eden Space".equals(item.getName()) //
-                       || "PS Eden Space".equals(item.getName()) //
-                       || "G1 Eden".equals(item.getName()) //
-            ) {
+                    || "Eden Space".equals(item.getName()) //
+                    || "PS Eden Space".equals(item.getName()) //
+                    || "G1 Eden".equals(item.getName()) //
+                    ) {
                 edenSpaceMxBean = item;
             } else if ("Par Survivor Space".equals(item.getName()) //
-                       || "Survivor Space".equals(item.getName()) //
-                       || "PS Survivor Space".equals(item.getName()) //
-                       || "G1 Survivor".equals(item.getName()) //
-            ) {
+                    || "Survivor Space".equals(item.getName()) //
+                    || "PS Survivor Space".equals(item.getName()) //
+                    || "G1 Survivor".equals(item.getName()) //
+                    ) {
                 pSSurvivorSpaceMxBean = item;
+            } else if ("Metaspace".equals(item.getName())) {
+                //jdk8
+                metaspaceMxBean = item;
+            } else if ("Code Cache".equals(item.getName())) {
+                //jdk8
+            } else if ("Compressed Class Space".equals(item.getName())) {
+                //jdk8
             }
         }
     }
@@ -236,6 +247,24 @@ public class JVMMemory implements JVMMemoryMBean {
             return 0;
         }
         return pSSurvivorSpaceMxBean.getUsage().getUsed();
+    }
+
+    @Override
+    public long getMetaSpaceSize() {
+        return 0;
+        //yingkhtodo:desc:不知道怎么获取
+    }
+
+    @Override
+    public long getMaxMetaSpaceSize() {
+        //yingkhtodo:desc:不知道怎么获取
+        return 0;
+    }
+
+    @Override
+    public long getCompressedClassSpaceSize() {
+        //yingkhtodo:desc:不知道怎么获取
+        return 0;
     }
 
 }

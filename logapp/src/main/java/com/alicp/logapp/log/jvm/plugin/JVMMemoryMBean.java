@@ -64,5 +64,16 @@ public interface JVMMemoryMBean {
 
     long getSurvivorUsed();
 
+    //MetaSpace
+    // 元空间的初始大小
+    long getMetaSpaceSize();
+
+    //元空间的最大值
+    long getMaxMetaSpaceSize();
+
+    //指针压缩空间
+    long getCompressedClassSpaceSize();
+
+
 }
 
