@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active:  'daily'
+
+
+server:
+  port: 7001
+

@@ -22,6 +22,7 @@
         <module>tddl-test</module>
         <module>websocket</module>
         <module>logapp</module>
+        <module>eslearn</module>
     </modules>
 
     <parent>

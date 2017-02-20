@@ -1,0 +1,6 @@
+config:
+  elk:
+    es:
+      host:  10.1.6.155
+      port:   9300
+      clusterName: uuzz-cluster
