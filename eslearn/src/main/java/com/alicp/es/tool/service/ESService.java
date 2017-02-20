@@ -1,6 +1,8 @@
 package com.alicp.es.tool.service;
 
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.MultiSearchResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
@@ -9,7 +11,9 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +31,7 @@ import java.util.Map;
  * Date: 17/2/15
  * Time: 下午2:59
  * CopyRight: taobao
- * Descrption:
+ * Descrption:    http://blog.csdn.net/ty4315/article/details/52434296
  */
 @Component
 public class ESService {
@@ -67,9 +71,30 @@ public class ESService {
     }
 
 
-    public void alert() {
+    public void alert(BaseQO baseQO) {
+        //查询1分钟内的数据
+        QueryBuilder queryBuilder1 = QueryBuilders.termQuery("_index", "metricbeat-2017.02.20");
+        QueryBuilder queryBuilder2 = QueryBuilders.termQuery("_type", "metricsets");
+        QueryBuilder queryBuilder3 = QueryBuilders.termQuery("metricset.module", "system");
 
 
+        SearchRequestBuilder srb1 = client
+                .prepareSearch().setQuery(QueryBuilders.matchQuery("_index", "metricbeat-2017.02.20")).setSize(1);
+        SearchRequestBuilder srb2 = client
+                .prepareSearch().setQuery(QueryBuilders.matchQuery("metricset.module", "system")).setSize(1);
+
+        MultiSearchResponse sr = client.prepareMultiSearch()
+                .add(srb1)
+                .add(srb2)
+                .get();
+
+        long nbHits = 0;
+        for (MultiSearchResponse.Item item : sr.getResponses()) {
+            SearchResponse response = item.getResponse();
+            nbHits += response.getHits().getTotalHits();
+//            response.getHits().hits()[0];
+            System.out.println("response="+response.toString());
+        }
     }
 
 

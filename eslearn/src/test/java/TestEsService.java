@@ -38,13 +38,23 @@ public class TestEsService extends ESTestBoot {
     }
 
     @Test
-     public void testDailySearch() {
-         //搜索数据
-         String index = "metricbeat-2017.02.20";
-         String type = "metricsets";
-         String id = "AVpZUBsEnC74huSk8ATl";
-         BaseQO baseQO = new BaseQO(index, type, id);
-         Map<String, Object> result = esService.testSearch(baseQO);
-         System.out.println("result=" + result.toString());
-     }
+    public void testDailySearch() {
+        //搜索数据
+        String index = "metricbeat-2017.02.20";
+        String type = "metricsets";
+        String id = "AVpZUBsEnC74huSk8ATl";
+        BaseQO baseQO = new BaseQO(index, type, id);
+        Map<String, Object> result = esService.testSearch(baseQO);
+        System.out.println("result=" + result.toString());
+    }
+
+    @Test
+    public void testAlert() {
+        //搜索数据
+        String index = "metricbeat-2017.02.20";
+        String type = "metricsets";
+        String id = "AVpZUBsEnC74huSk8ATl";
+        BaseQO baseQO = new BaseQO(index, type, id);
+        esService.alert(baseQO);
+    }
 }
