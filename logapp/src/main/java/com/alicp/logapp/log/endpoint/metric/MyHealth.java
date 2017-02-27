@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * Descrption:    http://localhost:7002/health
  */
 
-@Component
+//@Component
 public class MyHealth implements HealthIndicator {
     @Override
     public Health health() {
