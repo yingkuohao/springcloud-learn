@@ -9,9 +9,10 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.util.CollectionUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
@@ -71,6 +72,38 @@ public class ESService {
     }
 
 
+    public SearchHits alertBoolQuery(BaseQO baseQO, Map<String, Object> queryRules) {
+        SearchHits hits = null;
+        SearchRequestBuilder responsebuilder = client.prepareSearch(baseQO.getIndex()).setTypes(baseQO.getType());
+        try {
+            BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+            if (!org.springframework.util.CollectionUtils.isEmpty(queryRules)) {
+                for (Map.Entry<String, Object> entry : queryRules.entrySet()) {
+                    boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
+                }
+            }
+            SearchResponse myresponse = responsebuilder.setQuery(boolQueryBuilder).execute().actionGet();
+            hits = myresponse.getHits();
+        } catch (Exception e) {
+            log.error("querey es error,baseQo={}", baseQO.toString());
+        }
+        return hits;
+    }
+
+    public SearchHits alertBoolQuery(BaseQO baseQO) {
+        SearchHits hits = null;
+        try {
+            SearchRequestBuilder responsebuilder = client.prepareSearch(baseQO.getIndex()).setTypes(baseQO.getType());
+            responsebuilder.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchPhraseQuery("_index", "metricbeat-2017.02.20")).
+                    must(QueryBuilders.matchPhraseQuery("metricset.module", "system")));
+            SearchResponse myresponse = responsebuilder.execute().actionGet();
+            hits = myresponse.getHits();
+        } catch (Exception e) {
+            log.error("querey es error,baseQo={}", baseQO.toString());
+        }
+        return hits;
+    }
+
     public void alert(BaseQO baseQO) {
         //查询1分钟内的数据
         QueryBuilder queryBuilder1 = QueryBuilders.termQuery("_index", "metricbeat-2017.02.20");
@@ -92,8 +125,8 @@ public class ESService {
         for (MultiSearchResponse.Item item : sr.getResponses()) {
             SearchResponse response = item.getResponse();
             nbHits += response.getHits().getTotalHits();
-//            response.getHits().hits()[0];
-            System.out.println("response="+response.toString());
+            response.getHits().getHits()[0].getSourceAsString();
+            System.out.println("response=" + response.toString());
         }
     }
 

@@ -1,5 +1,7 @@
 package com.alicp.es.tool.service;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 /**
  * Created by IntelliJ IDEA.
  * User: chengjing
@@ -56,4 +58,9 @@ public class BaseQO {
     public void setId(String id) {
         this.id = id;
     }
+    @Override
+   	public String toString() {
+   		return ReflectionToStringBuilder.toString(this);
+   	}
+
 }

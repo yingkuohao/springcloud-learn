@@ -1,6 +1,7 @@
 import com.alicp.es.test.ESTestBoot;
 import com.alicp.es.tool.service.BaseQO;
 import com.alicp.es.tool.service.ESService;
+import org.elasticsearch.search.SearchHits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,10 @@ public class TestEsService extends ESTestBoot {
         String type = "metricsets";
         String id = "AVpZUBsEnC74huSk8ATl";
         BaseQO baseQO = new BaseQO(index, type, id);
-        esService.alert(baseQO);
+        SearchHits hits = esService.alertBoolQuery(baseQO);
+
+        for (int i = 0; i < hits.getHits().length; i++) {
+            System.out.println(hits.getHits()[i].getSourceAsString());
+        }
     }
 }
