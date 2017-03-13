@@ -16,6 +16,8 @@ public class BaseQO {
     private String index;   //index名称
     private String type;        //文档类型
     private String id;                 //查询id
+    private Integer from; //起始位置
+    private Integer size;           //每页大小
 
     public BaseQO() {
     }
@@ -63,4 +65,19 @@ public class BaseQO {
    		return ReflectionToStringBuilder.toString(this);
    	}
 
+    public Integer getFrom() {
+        return from;
+    }
+
+    public void setFrom(Integer from) {
+        this.from = from;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
 }

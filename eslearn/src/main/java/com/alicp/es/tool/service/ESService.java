@@ -10,12 +10,14 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.util.CollectionUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.search.MatchQuery;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Map;
 
 /**
@@ -72,30 +77,70 @@ public class ESService {
     }
 
 
-    public SearchHits alertBoolQuery(BaseQO baseQO, Map<String, Object> queryRules) {
+    public void alertBoolQuery(BaseQO baseQO, Map<String, Object> queryRules, AlertHandler alertHandler) {
         SearchHits hits = null;
-        SearchRequestBuilder responsebuilder = client.prepareSearch(baseQO.getIndex()).setTypes(baseQO.getType());
+        SearchRequestBuilder responsebuilder = client.prepareSearch(baseQO.getIndex()).setTypes(baseQO.getType()).setSearchType(SearchType.QUERY_AND_FETCH);
         try {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             if (!org.springframework.util.CollectionUtils.isEmpty(queryRules)) {
                 for (Map.Entry<String, Object> entry : queryRules.entrySet()) {
-                    boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
+//                    boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
+                    boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+//                    TermQueryBuilder termQueryBuilder = new TermQueryBuilder(entry.getKey(), entry.getValue());
+//                    MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder(entry.getKey(), entry.getValue()).operator(Operator.AND);
+//                    responsebuilder.setQuery(matchQueryBuilder);
+//                    QueryBuilders.termQuery(entry.getKey(), entry.getValue());
                 }
             }
-            SearchResponse myresponse = responsebuilder.setQuery(boolQueryBuilder).execute().actionGet();
-            hits = myresponse.getHits();
+            //日期,过滤5分钟之前到现在的时间区间
+            DateTime now = DateTime.now();
+            DateTime minusBefore = now.minusMinutes(3);
+            RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder("@timestamp").from(minusBefore).to(now);
+            long begin = Instant.now().getEpochSecond();
+            boolQueryBuilder.must(rangeQueryBuilder);
+            //采用scroll模式来提高效率,setScroll 1分钟来保留上下文
+            SearchResponse myresponse = responsebuilder.setQuery(boolQueryBuilder).setSize(baseQO.getSize()).setScroll(TimeValue.timeValueMinutes(2)).execute().actionGet();
+
+            for (SearchHit searchHitFields : myresponse.getHits().getHits()) {
+                alertHandler.execute(searchHitFields);
+            }
+
+            if (myresponse != null) {
+
+                long count = myresponse.getHits().getTotalHits();
+                log.info("----startTime:{},endTime:{},hits-count:{},cur-count:{}", minusBefore, now, count, myresponse.getHits().getHits().length);
+                System.out.println("scroll 模式启动！");
+                //通过scrollId分页遍历
+                for (int i = 0, sum = 0; sum < count; i++) {
+                    myresponse = client.prepareSearchScroll(myresponse.getScrollId())
+                            .setScroll(TimeValue.timeValueMinutes(2))
+                            .execute().actionGet();
+                    SearchHit[] searchHits = myresponse.getHits().getHits();
+                    long curCount = searchHits.length;
+                    if (curCount == 0) {
+                        break;
+                    }
+                    log.info("--curCount-{}", curCount);
+                    sum += myresponse.getHits().hits().length;
+                    System.out.println("总量" + count + " 已经查到" + sum);
+                    for (SearchHit searchHitFields : searchHits) {
+                        alertHandler.execute(searchHitFields);
+                    }
+                }
+                System.out.println("耗时: " + (Instant.now().getEpochSecond() - begin));
+            }
         } catch (Exception e) {
-            log.error("querey es error,baseQo={}", baseQO.toString());
+            log.error("querey es error,baseQo={},error={}", baseQO.toString(), e);
         }
-        return hits;
     }
 
     public SearchHits alertBoolQuery(BaseQO baseQO) {
         SearchHits hits = null;
         try {
             SearchRequestBuilder responsebuilder = client.prepareSearch(baseQO.getIndex()).setTypes(baseQO.getType());
-            responsebuilder.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchPhraseQuery("_index", "metricbeat-2017.02.20")).
-                    must(QueryBuilders.matchPhraseQuery("metricset.module", "system")));
+            responsebuilder.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchPhraseQuery("_index", baseQO.getIndex())).
+                    must(QueryBuilders.matchPhraseQuery("metricset.module", "system")));//yingkhtodo:desc: test
+
             SearchResponse myresponse = responsebuilder.execute().actionGet();
             hits = myresponse.getHits();
         } catch (Exception e) {
