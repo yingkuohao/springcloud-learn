@@ -61,15 +61,15 @@ public class StoreDO {
    	 */
    	private Integer deleteFlag;
 
-   	/**
-   	 * 创建时间
-   	 */
-   	private Date gmtCreate;
+		/**
+		 * 创建时间
+		 */
+		private Date gmtCreate;
 
-   	/**
-   	 * 修改时间
-   	 */
-   	private Date gmtModified;
+		/**
+		 * 修改时间
+		 */
+		private Date gmtModified;
 
    	/**
    	 * 所属中心名称（冗余）
