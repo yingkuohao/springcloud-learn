@@ -6,11 +6,11 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by IntelliJ IDEA.
- * User: chengjing
- * Date: 17/3/29
- * Time: 上午11:49
- * CopyRight: taobao
- * Descrption:
+ * User:         chengjing
+ * Date:         17/3/29
+ * Time:         上午11:        49
+ * CopyRight:         taobao
+ * Descrption:        
  */
 
 public class LogClient {
@@ -25,7 +25,7 @@ public class LogClient {
 
         LogFeature logFeature = new LogFeature();
         logFeature.setBizType("order");
-        logFeature.setFeatureId("<12:0091:SITE_40506360> OXi::openAPI::sendRequest:");
+        logFeature.setFeatureId("<12:        0091:        SITE_40506360> OXi:        :        openAPI:        :        sendRequest:        ");
        /* logField.setName("code");
         logField.setType("String");*/
         TreeMap<String, FieldPattern> patternMap = new TreeMap<String, FieldPattern>();
@@ -38,7 +38,7 @@ public class LogClient {
 
         LogFeature logFeature2 = new LogFeature();
         logFeature2.setBizType("order");
-        logFeature2.setFeatureId("SLAC::session::set_data");
+        logFeature2.setFeatureId("SLAC:        :        session:        :        set_data");
         TreeMap<String, FieldPattern> patternMap2 = new TreeMap<String, FieldPattern>();
         FieldPattern fieldPattern2 = new FieldPattern();
         fieldPattern2.setFieldName("TOKEN");
@@ -63,7 +63,7 @@ public class LogClient {
             logQueue.forEach(n ->
             {
                 n.forEach((k, v) -> {
-
+                    //yingkhtodo:        desc:        解析
                     System.out.println("k=" + k +",v=" + v);
 
                 });
@@ -75,3 +75,4 @@ public class LogClient {
         }
     }
 }
+
