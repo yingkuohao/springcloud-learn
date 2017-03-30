@@ -1,6 +1,12 @@
 package com.alicp.es.tool.service.parser;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
@@ -10,7 +16,7 @@ import java.util.concurrent.BlockingQueue;
  * Date:         17/3/29
  * Time:         上午11:        49
  * CopyRight:         taobao
- * Descrption:        
+ * Descrption:
  */
 
 public class LogClient {
@@ -19,13 +25,14 @@ public class LogClient {
         LogTemplate logTemplate = new LogTemplate();
         logTemplate.setAppName("test");
         String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/";
+        String outPutName = "regex_biz.log";
         logTemplate.setLogPath(path);
         logTemplate.setLogPattern("");
         logTemplate.setLogtName("test.log");
 
         LogFeature logFeature = new LogFeature();
         logFeature.setBizType("order");
-        logFeature.setFeatureId("<12:        0091:        SITE_40506360> OXi:        :        openAPI:        :        sendRequest:        ");
+        logFeature.setFeatureId("<12:0091:SITE_40506360> OXi::openAPI::sendRequest");
        /* logField.setName("code");
         logField.setType("String");*/
         TreeMap<String, FieldPattern> patternMap = new TreeMap<String, FieldPattern>();
@@ -33,12 +40,13 @@ public class LogClient {
         fieldPattern.setFieldName("code");
         fieldPattern.setType(String.class);
         patternMap.put("code", fieldPattern);
+        patternMap.put("message", new FieldPattern("message", Boolean.class));
         logFeature.setPatternMap(patternMap);
         logFeature.setPatternType(2);
 
         LogFeature logFeature2 = new LogFeature();
         logFeature2.setBizType("order");
-        logFeature2.setFeatureId("SLAC:        :        session:        :        set_data");
+        logFeature2.setFeatureId("SLAC::session::set_data");
         TreeMap<String, FieldPattern> patternMap2 = new TreeMap<String, FieldPattern>();
         FieldPattern fieldPattern2 = new FieldPattern();
         fieldPattern2.setFieldName("TOKEN");
@@ -58,14 +66,34 @@ public class LogClient {
         FileReader fileReader = new FileReader();
         try {
             //2.解析文件,只保留目标需求字段中的log片段
-            BlockingQueue<HashMap> logQueue = FileReader.readFile(logTemplate);
+            BlockingQueue<HashMap<String, StringBuilder>> logQueue = FileReader.readFile(logTemplate);
             //3. 遍历queue,正则解析每一个key
             logQueue.forEach(n ->
             {
                 n.forEach((k, v) -> {
                     //yingkhtodo:        desc:        解析
-                    System.out.println("k=" + k +",v=" + v);
+                    System.out.println("----k=" + k + ",----v=" + v);
+                    LogFeature logFeatureCur = logTemplate.getLogFeatureMap().get(k);
 
+                    Integer patternType = logFeatureCur.getPatternType();
+                    JSONObject jsonObject = new JSONObject();
+                    //正则解析value
+                    if (patternType == 1) {   //如果是1,直接按正则解析
+                        TreeMap<String, FieldPattern> patternMap1 = logFeatureCur.getPatternMap();
+                        FieldPattern fieldPatternCur = patternMap1.firstEntry().getValue();
+                        String simpleResult = RegexUtil.parseByPattern(v.toString(), fieldPatternCur.getPattern());
+                        jsonObject.put(fieldPatternCur.getFieldName(), simpleResult);
+                    } else if (patternType == 2) {  //如果是2,则
+                        Set<String> keySet = logFeatureCur.getPatternMap().keySet();
+                        Map<String, String> pareResult = RegexUtil.parseText(v.toString(), keySet);
+                        jsonObject = JSONObject.parseObject(JSON.toJSONString(pareResult));
+                    }
+                    System.out.println("----result=" + jsonObject);
+                    try {               //写入文件
+                        FileReader.writeFile(path + outPutName, jsonObject.toString() + "\n");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 });
 
             });

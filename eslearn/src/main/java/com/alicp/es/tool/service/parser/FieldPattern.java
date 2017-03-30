@@ -14,6 +14,20 @@ public class FieldPattern {
     private Class type;  //字段类型
     private String pattern;  //正则表达
 
+    public FieldPattern(String fieldName, Class type, String pattern) {
+        this.fieldName = fieldName;
+        this.type = type;
+        this.pattern = pattern;
+    }
+
+    public FieldPattern(String fieldName, Class type) {
+        this.fieldName = fieldName;
+        this.type = type;
+    }
+
+    public FieldPattern() {
+    }
+
     public String getFieldName() {
         return fieldName;
     }

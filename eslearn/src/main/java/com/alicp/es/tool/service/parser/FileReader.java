@@ -3,9 +3,12 @@ package com.alicp.es.tool.service.parser;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,14 +86,14 @@ public class FileReader {
     private final static String regxpForImgTag = "<\\s*code\\s+([^>]*)\\s*>";
     private final static String tag_code = "<\\\\s*code\\\\s.*?href\\\\s*=\\\\s*[^>]*\\\\s*>\\\\s*(.*?)\\\\s*<\\\\s*/\\\\s*code\\\\s*>";
 
-    public static BlockingQueue<HashMap> readFile(LogTemplate logTemplate) throws IOException {
+    public static BlockingQueue<HashMap<String, StringBuilder>> readFile(LogTemplate logTemplate) throws IOException {
         // Java 8例子
 //        String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/middleware.log.20170206_16";
         String fileName = logTemplate.getLogPath() + logTemplate.getLogtName(); //yingkhtodo:desc:确认下pattern怎么匹配
         List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
         StringBuilder sb = new StringBuilder();
         Map<String, StringBuilder> pointerMap = new HashMap<String, StringBuilder>();
-        BlockingQueue<HashMap> logQueue = new LinkedBlockingDeque<>();
+        BlockingQueue<HashMap<String, StringBuilder>> logQueue = new LinkedBlockingDeque<>();
 
         Map<String, LogFeature> logFields = logTemplate.getLogFeatureMap();
         String fieldPointer = null;
@@ -104,7 +107,7 @@ public class FileReader {
                     if (fieldPointer != null && !fieldPointer.equals(logPrefix)) {
                         //如果指针变化,说明日志指向了新的业务,应该把现有解析好的日志刷到队列.  并清空上一个field的key
                         try {
-                            logQueue.put(new HashMap(pointerMap));  //yingkhtodo:desc:map的拷贝,找一个高效api
+                            logQueue.put(new HashMap<String, StringBuilder>(pointerMap));  //yingkhtodo:desc:map的拷贝,找一个高效api
                             pointerMap.remove(fieldPointer);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -117,7 +120,7 @@ public class FileReader {
                         lineSb = new StringBuilder();
                         pointerMap.put(fieldPointer, lineSb);
                     }
-                    lineSb.append(line).append("\n");
+                    lineSb.append(line);
                     pointerMap.put(fieldPointer, lineSb);
                     break;//不考虑一行涵盖两种前缀的情况.匹配一种处理完,直接处理下一行
                 } else {
@@ -141,5 +144,19 @@ public class FileReader {
 
         return logQueue;
     }
+
+    public static  void writeFile(String path, List<String> line) throws IOException {
+        Files.write(Paths.get(path), line,
+                Charset.defaultCharset(), StandardOpenOption.APPEND);
+    }
+    public static  void writeFile(String path, String line) throws IOException {
+
+        Path path1 = Paths.get(path);
+        if(!path1.toFile().exists()) {
+            Files.createFile(path1);
+        }
+        Files.write(path1, line.getBytes(),
+                StandardOpenOption.APPEND);
+     }
 
 }

@@ -38,7 +38,7 @@ import java.util.TreeMap;
 
 public class LogFeature {
     private String bizType;        //业务类型,如订单,登录,结算
-    private String featureId;        //字段前缀,如
+    private String featureId;        //字段前缀,一行记录的唯一标识
     private Integer patternType;        //pattern类型,1:简单 2:group
     private TreeMap<String,FieldPattern> patternMap;       //特征解析key和类型
 
