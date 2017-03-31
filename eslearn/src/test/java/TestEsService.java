@@ -27,7 +27,7 @@ import java.util.Map;
 //@ContextConfiguration(locations = {"classpath*:/common-aop.xml"})
 public class TestEsService extends ESTestBoot {
 
-    @Autowired
+        @Autowired
     ESService esService;
     @Autowired
     AlertService alertService;

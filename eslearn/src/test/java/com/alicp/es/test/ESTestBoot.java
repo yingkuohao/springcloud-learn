@@ -7,7 +7,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@ComponentScan("com.alicp.es")
+@ComponentScan({"com.alicp.es","com.alicp.middleware.log"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(ESTestBoot.class)
 @SpringBootApplication
