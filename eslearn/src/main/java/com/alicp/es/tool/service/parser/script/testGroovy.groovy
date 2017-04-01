@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableMap
 
 class TestGroovy {
     public Object parse(String line) {
-       Map map= ImmutableMap.of("a","1","b",2);
+       Map map= ImmutableMap.of("a","1","b",2,"c",line);
         return JSONObject.toJSON(map);
     }
 

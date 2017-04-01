@@ -1,5 +1,6 @@
 package com.alicp.es.tool.service.parser;
 
+import com.alicp.es.tool.service.util.LocalHostUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -43,10 +44,6 @@ public class FileReadUtil {
                 File(path);
         // 读取指定的行
         try {
-            offSetMap.put(lastLineNum, 10);
-            FileReadUtil.readByLines(path);
-//            FileReadUtil.readAppointedLineNumber(sourceFile, lineNumber);
-//              System.out.println(FileReadUtil.getTotalLines(sourceFile));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,9 +113,7 @@ public class FileReadUtil {
         Map<String, LogFeature> logFields = logTemplate.getLogFeatureMap();
         String fieldPointer = null;
         for (String line : lines) {
-//            System.out.println(line);
             for (Map.Entry<String, LogFeature> logFeatureEntry : logFields.entrySet()) {
-//                String featureId = logFeatureEntry.getKey();
                 LogFeature logFeature = logFeatureEntry.getValue();
                 String logPrefix = logFeature.getFeatureId();
                 if (line.contains(logPrefix)) {
@@ -142,9 +137,7 @@ public class FileReadUtil {
                     pointerMap.put(fieldPointer, lineSb);
                     break;//不考虑一行涵盖两种前缀的情况.匹配一种处理完,直接处理下一行
                 } else {
-//                    sb.append(line);
                 }
-
             }
         }
         //处理最后一行
@@ -157,8 +150,6 @@ public class FileReadUtil {
             }
         }
 
-//        logQueue.forEach(System.out::println);
-        pointerMap = null;      //置空
 
         return logQueue;
     }
@@ -178,45 +169,15 @@ public class FileReadUtil {
                 StandardOpenOption.APPEND);
     }
 
-    // 读取文件指定行。
-    static void readAppointedLineNumber(File sourceFile, int lineNumber)
-            throws IOException {
-        FileReader in = new FileReader(sourceFile);
-        LineNumberReader reader = new LineNumberReader(in);
-        String s = reader.readLine();
-        if (lineNumber < 0 || lineNumber > getTotalLines(sourceFile)) {
-            System.out.println("不在文件的行数范围之内。");
-        }
-        {
-            while (s != null) {
-                System.out.println("当前行号为:"
-                        + reader.getLineNumber());
-                reader.setLineNumber(20);
-                System.out.println("更改后行号为:"
-                        + reader.getLineNumber());
-                System.out.println(s);
-                System.exit(0);
-                s = reader.readLine();
-            }
-        }
-        reader.close();
-        in.close();
-    }
 
-    static int size = 1;//主要是为了控制循环的次数，因为是定时刷，每次刷的文件行数可能不一样
-    private static String lastLineNum = "lastLineNum";//chars指的是字符数
     private static long chars = 0;//chars指的是字符数
-    private static Map<String, Integer> offSetMap = new HashMap<String, Integer>();
-
-    static {
-        offSetMap.put(lastLineNum, 0);
-    }
 
     /**
      * @param fileName
+     * @param offSetMap
      * @return
      */
-    public static List<String> readByLines(String fileName) {
+    public static List<String> readByLines(String fileName, Map<String, Integer> offSetMap) {
         //大集合，以sessionid为键，以一次session的所有访问记录list为值进行存储
         List<String> list = new ArrayList<String>();
         //一次session的访问记录集合
@@ -231,11 +192,15 @@ public class FileReadUtil {
             rf = new RandomAccessFile(fileName, "rw");
 
             //设置到此文件开头测量到的文件指针偏移量，在该位置发生下一个读取或写入操作
-            int lastSize = offSetMap.get(lastLineNum);
+            String offKey= LocalHostUtil.getHostAddress()+fileName;
+            int lastSize = offSetMap.get(offKey);
+            if(lastSize==0) {
+                chars =0; //如果文件的起始位置变成了0,偏移量也要跟着变
+            }
             rf.seek(chars);
             //获取文件的行数
             int fileSize = getFileLineCount(fileName);
-
+            //yingkhtodo:desc:这里要控制一下,客户端的文件名会变,的话这个起始指针得变
             for (int i = lastSize; i < fileSize; i++) {//从上一次读取结束时的文件行数到本次读取文件时的总行数中间的这个差数就是循环次数
                 //一行一行读取
                 tempString = rf.readLine();
@@ -243,15 +208,13 @@ public class FileReadUtil {
                 tempString = tempString.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
                 tempString = tempString.replaceAll("\\+", "%2B");
                 tempString = java.net.URLDecoder.decode(tempString, "GB2312");
-
-//                System.out.println(tempString);
                 list.add(tempString);
 
             }
             log.info("---readbyLine lastSize={},totalSize={},fileSize={}", lastSize, fileSize,list.size());
             chars = rf.getFilePointer();
             //返回此文件中的当前偏移量。
-            offSetMap.put(lastLineNum, fileSize);
+            offSetMap.put(offKey, fileSize);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -266,22 +229,13 @@ public class FileReadUtil {
         return list;
     }
 
-    // 文件内容的总行数。
-    static int getTotalLines(File file) throws IOException {
-        FileReader in = new FileReader(file);
-        LineNumberReader reader = new LineNumberReader(in);
-        String s = reader.readLine();
-        int lines = 0;
-        while (s != null) {
-            lines++;
-            s = reader.readLine();
-        }
-        reader.close();
-        in.close();
-        return lines;
-    }
 
 
+    /**
+     * 获取总行数
+     * @param filename
+     * @return
+     */
     public static int getFileLineCount(String filename) {
         int cnt = 0;
         LineNumberReader reader = null;

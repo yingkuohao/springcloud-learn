@@ -26,7 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -50,6 +52,7 @@ public class LogAgentService {
     @Autowired
     BizLog bizLog;
 
+    private static Map<String, Integer> offSetMap = new HashMap<String, Integer>();
 
     //初始化定时任务,每10秒执行一次,每一个log一个线程池
     @PostConstruct
@@ -61,23 +64,31 @@ public class LogAgentService {
         List<LogPathConfig> logPathConfigs = logAgentConfig1.getLogPathConfigList();
 
         logPathConfigs.forEach(n -> {
-            String pattern = "";
-            if (!StringUtils.isEmpty(n.getPattern())) {
-                //yingkhtodo:desc:如果有后缀,则需要解析下格式
-            }
-            String logPath = n.getInputPath() + pattern;
+
             String scriptPath = n.getScriptPath();
-            startScanTask(logPath, scriptPath);      //不同的path,不同的定时任务
+            startScanTask(n);      //不同的path,不同的定时任务
         });
 
     }
 
     //启动扫描任务
-    private void startScanTask(String logPath, String scriptPath) {
+    private void startScanTask(LogPathConfig logPathConfig) {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
                 log.info("startScanTask--" + LocalDateTime.now());
-                logParsing(logPath, scriptPath);
+                //定时扫描改变后缀
+                String pattern = "";
+                if (!StringUtils.isEmpty(logPathConfig.getPattern())) {            //"yyyyMMdd_HH"
+                    //yingkhtodo:desc:如果有后缀,则需要解析下格式 ,后面的时间变了,文件的起始指针也要变,否则会有问题
+                     pattern = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(logPathConfig.getPattern()));
+                }
+                String logPath = logPathConfig.getInputPath() + pattern;
+                //拼装文件的起始偏移量key,如果文件变了,偏移量要设为0,
+                String offKey=LocalHostUtil.getHostAddress()+logPath;
+                if(offSetMap.get(offKey)==null)  {
+                         offSetMap.put(offKey, 0);
+                }
+                logParsing(logPath, logPathConfig.getScriptPath());
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
             }
@@ -87,21 +98,20 @@ public class LogAgentService {
     int i = 0;
 
 
-
     //日志解析
     private void logParsing(String logPath, String scriptPath) {
         List<String> lines = null;
         try {
             //yingkhtodo:desc:需要记住文件位点.
             //2.解析文件,输入:line,script
-            lines = FileReadUtil.readByLines(logPath);            //yingkhtodo:desc:记住位点去读
+            lines = FileReadUtil.readByLines(logPath,offSetMap);            //yingkhtodo:desc:记住位点去读
 //            lines = Files.readAllLines(Paths.get(logPath), StandardCharsets.UTF_8);
             //yingkhtodo:desc:暂时注释
             lines.forEach(line -> {
                 //按行读取文件,调用script解析
                 Object formatResult = GroovyUtil.parse(scriptPath, line);
                 //yingkhtodo:desc:转换为json
-               log.info("formatResult=" + formatResult);
+                log.info("formatResult=" + formatResult);
                 JSONObject jsonObject = (JSONObject) formatResult;
                 bizLog.instance().log(jsonObject).build();
                 //输出到目标文件
