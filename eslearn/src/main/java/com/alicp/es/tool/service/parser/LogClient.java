@@ -1,12 +1,9 @@
 package com.alicp.es.tool.service.parser;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
@@ -63,10 +60,10 @@ public class LogClient {
         logTemplate.setLogFeatureMap(logFeatureHashMap);
 
 
-        FileReader fileReader = new FileReader();
+        FileReadUtil fileReader = new FileReadUtil();
         try {
             //2.解析文件,只保留目标需求字段中的log片段
-            BlockingQueue<HashMap<String, StringBuilder>> logQueue = FileReader.readFile(logTemplate);
+            BlockingQueue<HashMap<String, StringBuilder>> logQueue = FileReadUtil.readFile(logTemplate);
             //3. 遍历queue,正则解析每一个key
             logQueue.forEach(n ->
             {
@@ -90,7 +87,7 @@ public class LogClient {
                     }
                     System.out.println("----result=" + jsonObject);
                     try {               //写入文件
-                        FileReader.writeFile(path + outPutName, jsonObject.toString() + "\n");
+                        FileReadUtil.writeFile(path + outPutName, jsonObject.toString() + "\n");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

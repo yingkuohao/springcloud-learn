@@ -1,14 +1,17 @@
 package com.alicp.es.tool.service.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +29,28 @@ import java.util.regex.Pattern;
  * Descrption:
  */
 
-public class FileReader {
-
+public class FileReadUtil {
+    private static Logger log = LoggerFactory.getLogger(FileReadUtil.class);
     public static String KEY_SEND_REQUEST = "OXi::openAPI::sendRequest:";
 
     public static void main(String[] args) {
 
-
+        // 指定读取的行号
+        int lineNumber = 12;
+        String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/test.log";
+        // 读取文件
+        File sourceFile = new
+                File(path);
+        // 读取指定的行
+        try {
+            offSetMap.put(lastLineNum, 10);
+            FileReadUtil.readByLines(path);
+//            FileReadUtil.readAppointedLineNumber(sourceFile, lineNumber);
+//              System.out.println(FileReadUtil.getTotalLines(sourceFile));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 获取文件的内容的总行数
         String s = "02/06-16:59:59.578 [08] <12:0091:SITE_40506360> OXi::openAPI::sendRequest:             <code>001</code>";
         Pattern wp = Pattern.compile("(?is)(?<=code)[^<]+(?=code)");
         Matcher m = wp.matcher(s);
@@ -41,7 +59,7 @@ public class FileReader {
             System.out.println("group=" + group);
         }
 
-        FileReader fileReader = new FileReader();
+        FileReadUtil fileReader = new FileReadUtil();
 
         try {
             readFile();
@@ -145,18 +163,145 @@ public class FileReader {
         return logQueue;
     }
 
-    public static  void writeFile(String path, List<String> line) throws IOException {
+    public static void writeFile(String path, List<String> line) throws IOException {
         Files.write(Paths.get(path), line,
                 Charset.defaultCharset(), StandardOpenOption.APPEND);
     }
-    public static  void writeFile(String path, String line) throws IOException {
+
+    public static void writeFile(String path, String line) throws IOException {
 
         Path path1 = Paths.get(path);
-        if(!path1.toFile().exists()) {
+        if (!path1.toFile().exists()) {
             Files.createFile(path1);
         }
         Files.write(path1, line.getBytes(),
                 StandardOpenOption.APPEND);
-     }
+    }
 
+    // 读取文件指定行。
+    static void readAppointedLineNumber(File sourceFile, int lineNumber)
+            throws IOException {
+        FileReader in = new FileReader(sourceFile);
+        LineNumberReader reader = new LineNumberReader(in);
+        String s = reader.readLine();
+        if (lineNumber < 0 || lineNumber > getTotalLines(sourceFile)) {
+            System.out.println("不在文件的行数范围之内。");
+        }
+        {
+            while (s != null) {
+                System.out.println("当前行号为:"
+                        + reader.getLineNumber());
+                reader.setLineNumber(20);
+                System.out.println("更改后行号为:"
+                        + reader.getLineNumber());
+                System.out.println(s);
+                System.exit(0);
+                s = reader.readLine();
+            }
+        }
+        reader.close();
+        in.close();
+    }
+
+    static int size = 1;//主要是为了控制循环的次数，因为是定时刷，每次刷的文件行数可能不一样
+    private static String lastLineNum = "lastLineNum";//chars指的是字符数
+    private static long chars = 0;//chars指的是字符数
+    private static Map<String, Integer> offSetMap = new HashMap<String, Integer>();
+
+    static {
+        offSetMap.put(lastLineNum, 0);
+    }
+
+    /**
+     * @param fileName
+     * @return
+     */
+    public static List<String> readByLines(String fileName) {
+        //大集合，以sessionid为键，以一次session的所有访问记录list为值进行存储
+        List<String> list = new ArrayList<String>();
+        //一次session的访问记录集合
+
+        //java提供的一个可以分页读取文件的类,此类的实例支持对随机访问文件的读取和写入
+        RandomAccessFile rf = null;
+
+        String tempString = null;
+        try {
+
+            //初始化RandomAccessFile，参数一个为文件路径，一个为权限设置，这点与Linux类似，r为读，w为写
+            rf = new RandomAccessFile(fileName, "rw");
+
+            //设置到此文件开头测量到的文件指针偏移量，在该位置发生下一个读取或写入操作
+            int lastSize = offSetMap.get(lastLineNum);
+            rf.seek(chars);
+            //获取文件的行数
+            int fileSize = getFileLineCount(fileName);
+
+            for (int i = lastSize; i < fileSize; i++) {//从上一次读取结束时的文件行数到本次读取文件时的总行数中间的这个差数就是循环次数
+                //一行一行读取
+                tempString = rf.readLine();
+                //文件中文乱码处理
+                tempString = tempString.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
+                tempString = tempString.replaceAll("\\+", "%2B");
+                tempString = java.net.URLDecoder.decode(tempString, "GB2312");
+
+//                System.out.println(tempString);
+                list.add(tempString);
+
+            }
+            log.info("---readbyLine lastSize={},totalSize={},fileSize={}", lastSize, fileSize,list.size());
+            chars = rf.getFilePointer();
+            //返回此文件中的当前偏移量。
+            offSetMap.put(lastLineNum, fileSize);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (rf != null) {
+                try {
+                    rf.close();
+                } catch (IOException e1) {
+                }
+            }
+        }
+        log.info("---list={}",list.toString());
+        return list;
+    }
+
+    // 文件内容的总行数。
+    static int getTotalLines(File file) throws IOException {
+        FileReader in = new FileReader(file);
+        LineNumberReader reader = new LineNumberReader(in);
+        String s = reader.readLine();
+        int lines = 0;
+        while (s != null) {
+            lines++;
+            s = reader.readLine();
+        }
+        reader.close();
+        in.close();
+        return lines;
+    }
+
+
+    public static int getFileLineCount(String filename) {
+        int cnt = 0;
+        LineNumberReader reader = null;
+        try {
+            reader = new LineNumberReader(new FileReader(filename));
+            @SuppressWarnings("unused")
+            String lineRead = "";
+            while ((lineRead = reader.readLine()) != null) {
+            }
+            cnt = reader.getLineNumber();
+        } catch (Exception ex) {
+            cnt = -1;
+            ex.printStackTrace();
+        } finally {
+            try {
+                reader.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return cnt;
+    }
 }

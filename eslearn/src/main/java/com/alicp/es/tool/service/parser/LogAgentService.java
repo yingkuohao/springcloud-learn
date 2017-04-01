@@ -69,6 +69,7 @@ public class LogAgentService {
             String scriptPath = n.getScriptPath();
             startScanTask(logPath, scriptPath);      //不同的path,不同的定时任务
         });
+
     }
 
     //启动扫描任务
@@ -83,23 +84,30 @@ public class LogAgentService {
         }, 1, 10, TimeUnit.SECONDS);
     }
 
+    int i = 0;
+
+
+
     //日志解析
     private void logParsing(String logPath, String scriptPath) {
         List<String> lines = null;
         try {
+            //yingkhtodo:desc:需要记住文件位点.
             //2.解析文件,输入:line,script
-            lines = Files.readAllLines(Paths.get(logPath), StandardCharsets.UTF_8);
+            lines = FileReadUtil.readByLines(logPath);            //yingkhtodo:desc:记住位点去读
+//            lines = Files.readAllLines(Paths.get(logPath), StandardCharsets.UTF_8);
+            //yingkhtodo:desc:暂时注释
             lines.forEach(line -> {
                 //按行读取文件,调用script解析
                 Object formatResult = GroovyUtil.parse(scriptPath, line);
                 //yingkhtodo:desc:转换为json
-                System.out.println("formatResult=" + formatResult);
+               log.info("formatResult=" + formatResult);
                 JSONObject jsonObject = (JSONObject) formatResult;
                 bizLog.instance().log(jsonObject).build();
                 //输出到目标文件
             });
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("readlog error,path={},e={}", logPath, e);
         }
     }
