@@ -1,0 +1,107 @@
+#set( $title ='中心资源')  #set($title_sub='查询') #set($title_href='sale/saleBillQuery')
+<link rel="stylesheet" href="/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<script type="text/javascript" src="/lib/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" src="/lib/zTree_v3/js/jquery.ztree.excheck-3.5.js"></script>
+<style>
+    .form-control {
+        width: 73%;
+    }
+</style>
+<body>
+
+<div style="display:inline-block;overflow:auto;width:30%;float:left;height:600px;margin-right:30px;background-color:#f5f5f5">
+    <input type="hidden" value="$!logBaseDir" id="logBaseDir"/>
+    <ul id="crTree" class="ztree"></ul>
+</div>
+
+<div id="log-container"
+     style="width: 65%; float:left; height:600px; overflow-x: auto; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
+    <div>
+        <button type="button" class="tooltip-query btn btn-warning" type="button" id="sendMsg">发送消息</button>
+    </div>
+</div>
+</body>
+
+<SCRIPT LANGUAGE="JavaScript">
+    var ws = null;
+    var wsUrl = null;
+    var zTreeObj;
+    // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+    var setting = {
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        async: {
+            enable: true,
+            url: "/log/ajax/getCrResources?logBaseDir=" + $('#logBaseDir').val(),
+            autoParam: ["id", "name", "wholePath"],
+            type: "post"
+        },
+        callback: {
+            onClick: clickNode
+        },
+        check: {
+            enable: true,
+            chkboxType: {"Y": "", "N": ""} // 结点勾选时父子结点的关联关系
+        }
+    };
+    // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+    var zNodes = [
+        {id: "0", name: "全部", type: "0", isParent: true}
+    ];
+    /*    $(document).ready(function() {
+        });*/
+
+    $(document).ready(function() {
+
+        if (window.location.protocol == 'http:') {
+            wsUrl = 'ws://' + window.location.host;
+        } else {
+            wsUrl = 'wss://' + window.location.host;
+        }
+        // 指定websocket路径
+//        ws = new WebSocket('ws://localhost:7081/logls');
+        ws = new WebSocket(wsUrl + '/logls');
+        //这里开一个ws,留着做一些扩展,比如grep之类的
+        /*    ws.onopen = function() {
+                log('Info: connection opened.');
+            };
+            ws.onmessage = function(event) {
+                log('Received: ' + event.data);
+            };
+            ws.onclose = function(event) {
+                log('Info: connection closed.');
+                log(event);
+            };*/
+        zTreeObj = $.fn.zTree.init($("#crTree"), setting, zNodes);
+    });
+
+
+    var currTable = null; // 当前显示的表格
+
+    var tailLogWs = null;
+    // 以表格的形式展示所点击结点的数据
+    function clickNode(event, treeId, treeNode) {
+//        tailLogWs = new WebSocket('ws://localhost:7081/logtail');
+        tailLogWs = new WebSocket(wsUrl + '/logtail');
+        tailLogWs.onopen = function() {
+            tailLogWs.send(treeNode.wholePath);
+        }
+        tailLogWs.onmessage = function(event) {
+            // 接收服务端的实时日志并添加到HTML页面中
+            $("#log-container div").append(event.data);
+            // 滚动条滚动到最低部
+            $("#log-container").scrollTop($("#log-container div").height() - $("#log-container").height());
+        };
+
+    }
+    /*  $('#sendMsg').click(function() {
+          tailLogWs.send("Test click!")
+          });*/
+
+
+</script>
+</body>
+</html>

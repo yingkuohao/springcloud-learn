@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>日志监控</title>
+<link href="/lib/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="/lib/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="/lib/css/styles.css" rel="stylesheet">
+<link rel="shortcut icon" href="//img.alicdn.com/favicon.ico" type="image/x-icon" />	
+<script src="/lib/page.js"></script>
+<script src="/lib/bootstrap/3.3.7/js/jquery-3.1.0.min.js"></script>
+<script src="/lib/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- jbox-->
+<script type="text/javascript" src="/lib/jBox/browser.js"></script>
+<script type="text/javascript" src="/lib/jBox/jquery.jBox-2.3.min.js"></script>
+<script type="text/javascript" src="/lib/jBox/i18n/jquery.jBox-zh-CN.js"></script>
+<link type="text/css" rel="stylesheet" href="/lib/jBox/Skins/Default/jbox.css"/>
+<style>
+  .table th, .table td { 
+	text-align: center; 
+	height:38px;
+   }
+</style>
+<script type="text/javascript"> 
+$(function () { $('.tooltip-query').tooltip('toggle');});
+</script>
+</head>
+<body style="padding-top:50px;overflow-x:hidden;">
+
+###parse("/control/menu.vm")
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/cuntao">日志监控</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-file"></span> 日志数据
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+						<li><a href="$request.contextPath/cuntao/game/home">机器管理</a></li>
+						<li><a href="$request.contextPath/cuntao/province/home">log目录管理</a></li>
+                    </ul>
+                </li>
+				<li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-list-alt"></span> 服务监控
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="$request.contextPath/cuntao/terminalSale/home">服务提供</a></li>
+						<li class="divider"></li>
+						<li><a href="$request.contextPath/cuntao/sales/home">服务消费</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav" style="float: right;">
+            <li class="dropdown" style="float: right;">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-user"></span>$!loginUserNick
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="$!loginOutUrl">退出登录</a></li>
+                </ul>
+            </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+#if($title_sub)
+<div class="row clearfix">
+    <div class="col-md-12 column">
+        <ol class="breadcrumb" style="width: 100%">
+            <li><a href="$request.contextPath/$title_href">$!title</a></li>
+            <li class="active" id="title_sub">$!title_sub</li>
+        </ol>
+    </div>
+</div>
+#end
+#if($!message.success==true||$!message.success==false)
+<div id="message" class="alert alert-warning-message #if($!message.success==true)alert-success #else alert-warning #end" >#if($!message.success==true)操作成功！ #else 操作失败！ #end$!message.responseMsg
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+</div>
+#end
+#parse("/templates/macro.vm")
