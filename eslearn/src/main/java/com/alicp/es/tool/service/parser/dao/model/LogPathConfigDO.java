@@ -16,13 +16,14 @@ public class LogPathConfigDO {
     private Integer agentId;
 
     private String inputPath;   //日志的路径,含名称
-        private String pattern; //日志的后缀格式,如yyyy-MM-dd
+    private String pattern; //日志的后缀格式,如yyyy-MM-dd
     private String scriptPath; //脚本路径
 
     // 创建时间
-   	private Date gmtCreate;
-   	// 更新时间
-   	private Date gmtModified;
+    private Date gmtCreate;
+    // 更新时间
+    private Date gmtModified;
+
     public String getInputPath() {
         return inputPath;
     }

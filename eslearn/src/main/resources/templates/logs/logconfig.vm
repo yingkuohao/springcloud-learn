@@ -3,20 +3,17 @@
 #set($title_href = 'log/logconfig')
 <div class="container" style=" overflow-x: auto;">
     <form id="salesForm" class="form-horizontal required-validate" role="form" method="post"
-          action="/log/agent/query">
+          action="/log/config/query">
         <div class="form-group">
-            <label class="col-sm-1 control-label">业务名称</label>
+            <label class="col-sm-1 control-label">业务id</label>
             <div class="col-sm-2">
-                <input class="form-control" name="bizName" type="text" placeholder="业务名称" value="$!bizName"
-                       id="bizName"/>
-            </div>
-            <label class="col-sm-1 control-label">应用名称</label>
-            <div class="col-sm-2">
-                <input class="form-control" name="appName" type="text" placeholder="应用名称" value="$!appName"
-                       id="appName"/>
+                #set($test1 = $request.getParameter('agentId'))
+                <input class="form-control" name="agentId" type="text" placeholder="业务id" value="$test1"
+                       id="agentId"/>
             </div>
             <div class="col-sm-2">
                 <button type="submit" class="tooltip-query btn btn-primary">查询</button>
+                <a href="/log/config/addConfig?agentId=$test1" class="tooltip-query btn btn-warning" id="addBtn">添加</a>
             </div>
         </div>
     </form>

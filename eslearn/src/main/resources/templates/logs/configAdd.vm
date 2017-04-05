@@ -1,0 +1,92 @@
+#set($title = '日志配置管理')
+#set($title_sub = '维护')
+#set($title_href = 'log/config/query')
+<div class="container">
+    <div class="panel panel-default">
+        #parse("/control/tipMsg.vm")
+        <div class="panel-heading">$!{title_sub}配置信息</div>
+        <div class="panel-body">
+         #*   <form id="configAddForm" class="form-horizontal" action="/log/config/save" role="form">*#
+                <form id="transportForm" class="form-horizontal required-validate" role="form" method="post"
+                	enctype="multipart/form-data" action="/log/config/save">
+                    <input type="hidden" name="agentId" value="$!agentId"></input>
+                $!csrfToken.hiddenField
+                <table class="table table-condensed table-bordered table-striped table-hover">
+                    <tr>
+                        <td>日志路径</td>
+                        <td><input class="form-control" id="inputPath" name="inputPath" type="text"
+                                   placeholder="如：/home/admin/alicp/biz.log" value="$!provinceDo.inputPath" #if($!provinceDo)
+                                   readonly #end/></td>
+                    </tr>
+                    <tr>
+                        <td>日志后缀</td>
+                        <td><input class="form-control" id="pattern" name="pattern" type="text"
+                                   placeholder="如：yyyyMMHH" value="$!provinceDo.pattern" #if($!provinceDo)
+                                   readonly #end/></td>
+                    </tr>
+                    <tr>
+                        <td>脚本路径</td>
+                        <td><input class="form-control" id="scriptPath" name="scriptPath" type="text"
+                                   placeholder="脚本名称"
+                            value="$!provinceDo.scriptPath" #if($!provinceDo)
+                                readonly #end/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>选择脚本文件</td>
+                        <td>
+                            <input id="myfile" name="myfile" type="file" style="display:none" />
+                            <input id="myfiletext" name="myfiletext" onclick="$('input[id=myfile]').click();"
+                                   class="form-control" type="text" placeholder="点击选择文件" readonly/>
+
+                        </td>
+                    </tr>
+
+              #*    	<div class="col-sm-3">
+                      <label class="col-sm-1 control-label">选择脚本文件</label>
+                  	  <input id="myfile" name="myfile" type="file" style="display:none" />
+                  	  <div class="input-append">
+                  	    <input id="myfiletext" name="myfiletext" onclick="$('input[id=myfile]').click();" class="form-control" type="text" placeholder="点击选择文件" readonly/>
+                  	  </div>*#
+                  	</div>
+
+                    <tr>
+                        <td colSpan="2">
+                            <button id="addBtn" type="submit" class="tooltip-query btn btn-danger">提 交</button>
+                            <button id="rtnBtn" type="button" class="tooltip-query btn btn-normal" href="#"
+                                    onclick="javascript:history.back(-1);">返 回
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="agentId" value="$!provinceDo.id"></input>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#addBtn').click(function() {
+
+
+        if ($.trim($('#inputPath').val()) == "") {
+            $.jBox.tip('业务名称不可为空！', 'fail');
+            return;
+        }
+
+        if ($.trim($('#pattern').val()) == "") {
+            $.jBox.tip('应用名称不可为空！', 'fail');
+            return;
+        }
+        if ($.trim($('#scriptPath').val()) == "") {
+            $.jBox.tip('服务器ip不可为空！', 'fail');
+            return;
+        }
+
+        $('#configAddForm').submit();
+    });
+
+    $('input[id=myfile]').change(function() {
+      $('#myfiletext').val($(this).val());
+    });
+</script>

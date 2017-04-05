@@ -17,6 +17,7 @@
             </div>
             <div class="col-sm-2">
                 <button type="submit" class="tooltip-query btn btn-primary">查询</button>
+                <a href="/log/agent/addAgent" class="tooltip-query btn btn-warning" id="addBtn">添加</a>
             </div>
         </div>
     </form>

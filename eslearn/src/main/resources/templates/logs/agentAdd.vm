@@ -1,0 +1,67 @@
+#set($title = '客户端管理')
+#set($title_sub = '维护')
+#set($title_href = 'log/agent/query')
+<div class="container">
+    <div class="panel panel-default">
+        #parse("/control/tipMsg.vm")
+        <div class="panel-heading">$!{title_sub}客户端信息</div>
+        <div class="panel-body">
+            <form id="agentAddForm" class="form-horizontal" action="/log/agent/save" role="form">
+                $!csrfToken.hiddenField
+                <table class="table table-condensed table-bordered table-striped table-hover">
+                    <tr>
+                        <td>业务名称</td>
+                        <td><input class="form-control" id="bizName" name="bizName" type="text"
+                                   placeholder="如：幸运赛车、顺丰彩" value="$!provinceDo.bizName" #if($!provinceDo)
+                                   readonly #end/></td>
+                    </tr>
+                    <tr>
+                        <td>应用名称</td>
+                        <td><input class="form-control" id="appName" name="appName" type="text"
+                                   placeholder="如：jkc-gw" value="$!provinceDo.appName" #if($!provinceDo)
+                                   readonly #end/></td>
+                    </tr>
+                    <tr>
+                        <td>服务器ip</td>
+                        <td><input class="form-control" id="ips" name="ips" type="text"
+                                   placeholder="多个ip逗号分隔,如 192.168.13.3,192.168.13.2"
+                            value="$!provinceDo.ips" #if($!provinceDo)
+                                readonly #end/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colSpan="2">
+                            <button id="addBtn" type="button" class="tooltip-query btn btn-danger">提 交</button>
+                            <button id="rtnBtn" type="button" class="tooltip-query btn btn-normal" href="#"
+                                    onclick="javascript:history.back(-1);">返 回
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="agentId" value="$!provinceDo.id"></input>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#addBtn').click(function() {
+
+
+        if ($.trim($('#bizName').val()) == "") {
+            $.jBox.tip('业务名称不可为空！', 'fail');
+            return;
+        }
+
+        if ($.trim($('#appName').val()) == "") {
+            $.jBox.tip('应用名称不可为空！', 'fail');
+            return;
+        }
+        if ($.trim($('#ips').val()) == "") {
+            $.jBox.tip('服务器ip不可为空！', 'fail');
+            return;
+        }
+
+        $('#agentAddForm').submit();
+    });
+</script>

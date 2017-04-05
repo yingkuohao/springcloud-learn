@@ -1,6 +1,7 @@
 package com.alicp.es.tool.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alicp.es.tool.service.parser.FileReadUtil;
 import com.alicp.es.tool.service.parser.dao.mapper.LogAgentConfigMapper;
 import com.alicp.es.tool.service.parser.dao.mapper.LogPathConfigMapper;
 import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
@@ -16,8 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/log")
@@ -82,6 +88,15 @@ public class LogController {
         //yingkhtodo:desc:根据服务器ip和用户名密码,获取日志路径
     }
 
+
+    //代理端信息主页
+    @RequestMapping("/agentinfo")
+    public String appinfo(Model model) {
+        logger.info("log ok");
+        return pageView;
+    }
+
+    //代理端信息查询
     @RequestMapping("/agent/query")
     public String getAgentInfo(Model model, @RequestParam("bizName") String bizName, @RequestParam("appName") String appName) {
         if (StringUtils.isEmpty(bizName) || StringUtils.isEmpty(appName)) {
@@ -94,22 +109,82 @@ public class LogController {
         return pageView;
     }
 
-    private static final String pageView = "logs/agentinfo";
-    @RequestMapping("/agentinfo")
-    public String appinfo(Model model) {
-        logger.info("log ok");
+    //代理端信息新增
+    @RequestMapping("/agent/addAgent")
+    public String addAgent(Model model) {
+        return "logs/agentAdd";
+    }
+
+    //代理端信息保存
+    @RequestMapping("/agent/save")
+    public String agentSave(Model model, @RequestParam("bizName") String bizName, @RequestParam("appName") String appName, @RequestParam("ips") String ips) {
+        if (StringUtils.isEmpty(bizName) || StringUtils.isEmpty(appName) || StringUtils.isEmpty(ips)) {
+            logger.info("param empty! ");
+            model.addAttribute("tipMsg", "查询数据不存在");
+        } else {
+            LogAgentConfigDO logAgentConfigDO = new LogAgentConfigDO();
+            logAgentConfigDO.setBizName(bizName);
+            logAgentConfigDO.setAppName(appName);
+            logAgentConfigDO.setIps(ips);
+            int agentId = agentConfigMapper.insert(logAgentConfigDO);
+//            model.addAttribute("ssdList", Lists.newArrayList(logAgentConfigDO));
+            if (agentId > 0) {
+                model.addAttribute("tipMsg", "操作成功！");
+            } else {
+                model.addAttribute("tipMsg", "操作失败！请查看日志!");
+            }
+            return getAgentInfo(model, bizName, appName);
+        }
         return pageView;
     }
 
+    private static final String pageView = "logs/agentinfo";
+
+    //配置信息查询
     @RequestMapping("/config/query")
     public String getLogConfigInfo(Model model, @RequestParam("agentId") Integer agentId) {
-        if ( null == agentId) {
+        if (null == agentId) {
             logger.info("param empty! ");
             model.addAttribute("tipMsg", "查询数据不存在");
         } else {
             List<LogPathConfigDO> logPathConfigDOList = logPathConfigMapper.getLogPathByAgentId(agentId);
             model.addAttribute("ssdList", logPathConfigDOList);
         }
-        return  "logs/logconfig";
+        return "logs/logconfig";
+    }
+
+    //配置信息新增
+    @RequestMapping("/config/addConfig")
+    public String addConfig(Model model,@RequestParam(name = "agentId") Integer agentId) {
+        model.addAttribute("agentId", agentId);
+        return "logs/configAdd";
+    }
+
+    @SuppressWarnings({"unchecked"})
+    @RequestMapping(value = "/config/save")
+    public String uploadTransportDoc(@RequestParam("myfile") MultipartFile myfile, @RequestParam("agentId") int agentId,
+                                     @RequestParam("pattern") String pattern, @RequestParam("inputPath") String inputPath, @RequestParam("scriptPath") String scriptPath,
+                                     Model model) {
+        model.addAttribute("tipMsg", "脚本文件导入失败");
+        if (!myfile.isEmpty()) {
+            try {
+                long currtime = System.currentTimeMillis();
+                String outPath = "/Users/chengjing/logs/alicplog/" + myfile.getName();
+                Files.write(Paths.get(outPath), myfile.getBytes(), StandardOpenOption.APPEND);
+                LogPathConfigDO logPathConfigDO = new LogPathConfigDO();
+                logPathConfigDO.setAgentId(agentId);
+                logPathConfigDO.setPattern(pattern);
+                logPathConfigDO.setInputPath(inputPath);
+                logPathConfigDO.setScriptPath(scriptPath);
+                int i = logPathConfigMapper.insert(logPathConfigDO);
+                if (i > 0) {
+                    model.addAttribute("tipMsg", "运输文件导入成功");
+                }
+                logger.info("import use time {}", System.currentTimeMillis() - currtime);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        return getLogConfigInfo(model, agentId);
     }
 }
