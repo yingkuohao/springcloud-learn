@@ -24,14 +24,14 @@
                                    placeholder="如：yyyyMMHH" value="$!provinceDo.pattern" #if($!provinceDo)
                                    readonly #end/></td>
                     </tr>
-                    <tr>
+             #*       <tr>
                         <td>脚本路径</td>
                         <td><input class="form-control" id="scriptPath" name="scriptPath" type="text"
                                    placeholder="脚本名称"
                             value="$!provinceDo.scriptPath" #if($!provinceDo)
                                 readonly #end/>
                         </td>
-                    </tr>
+                    </tr>*#
 
                     <tr>
                         <td>选择脚本文件</td>
@@ -43,12 +43,6 @@
                         </td>
                     </tr>
 
-              #*    	<div class="col-sm-3">
-                      <label class="col-sm-1 control-label">选择脚本文件</label>
-                  	  <input id="myfile" name="myfile" type="file" style="display:none" />
-                  	  <div class="input-append">
-                  	    <input id="myfiletext" name="myfiletext" onclick="$('input[id=myfile]').click();" class="form-control" type="text" placeholder="点击选择文件" readonly/>
-                  	  </div>*#
                   	</div>
 
                     <tr>

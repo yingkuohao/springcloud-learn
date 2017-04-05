@@ -4,7 +4,7 @@ config:
       host:   127.0.0.1
       port:   9300
       clusterName: my-application
-
+      scriptBasePath:  /Users/chengjing/logs/alicplog
 
 spring:
     datasource:

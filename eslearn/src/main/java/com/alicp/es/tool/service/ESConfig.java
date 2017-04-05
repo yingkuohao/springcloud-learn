@@ -19,6 +19,8 @@ public class ESConfig {
     private int port;      //es 端口
     private String clusterName;      //集群名称
 
+    private String scriptBasePath;      //脚本基础路径
+
     public String getHost() {
         return this.host;
     }
@@ -41,5 +43,13 @@ public class ESConfig {
 
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
+    }
+
+    public String getScriptBasePath() {
+        return scriptBasePath;
+    }
+
+    public void setScriptBasePath(String scriptBasePath) {
+        this.scriptBasePath = scriptBasePath;
     }
 }

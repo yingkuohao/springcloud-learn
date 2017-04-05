@@ -1,11 +1,14 @@
 package com.alicp.es.tool.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alicp.es.tool.service.ESConfig;
 import com.alicp.es.tool.service.parser.FileReadUtil;
 import com.alicp.es.tool.service.parser.dao.mapper.LogAgentConfigMapper;
 import com.alicp.es.tool.service.parser.dao.mapper.LogPathConfigMapper;
 import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
 import com.alicp.es.tool.service.parser.dao.model.LogPathConfigDO;
+import com.alicp.middleware.log.AlicpLog;
+import com.alicp.middleware.log.BizLog;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,6 +37,8 @@ public class LogController {
     LogAgentConfigMapper agentConfigMapper;
     @Autowired
     LogPathConfigMapper logPathConfigMapper;
+    @Autowired
+    ESConfig esConfig;
 
     @RequestMapping("/log")
     public String log(Model model) {
@@ -155,7 +160,7 @@ public class LogController {
 
     //配置信息新增
     @RequestMapping("/config/addConfig")
-    public String addConfig(Model model,@RequestParam(name = "agentId") Integer agentId) {
+    public String addConfig(Model model, @RequestParam(name = "agentId") Integer agentId) {
         model.addAttribute("agentId", agentId);
         return "logs/configAdd";
     }
@@ -163,22 +168,27 @@ public class LogController {
     @SuppressWarnings({"unchecked"})
     @RequestMapping(value = "/config/save")
     public String uploadTransportDoc(@RequestParam("myfile") MultipartFile myfile, @RequestParam("agentId") int agentId,
-                                     @RequestParam("pattern") String pattern, @RequestParam("inputPath") String inputPath, @RequestParam("scriptPath") String scriptPath,
+                                     @RequestParam("pattern") String pattern, @RequestParam("inputPath") String inputPath,
                                      Model model) {
         model.addAttribute("tipMsg", "脚本文件导入失败");
         if (!myfile.isEmpty()) {
             try {
+                String fileSplit = "/";
                 long currtime = System.currentTimeMillis();
-                String outPath = "/Users/chengjing/logs/alicplog/" + myfile.getName();
-                Files.write(Paths.get(outPath), myfile.getBytes(), StandardOpenOption.APPEND);
+                LogAgentConfigDO logAgentConfigDO = agentConfigMapper.getLogAgentConfigDO(agentId);
+                StringBuffer stringBuffer = new StringBuffer(esConfig.getScriptBasePath());
+                stringBuffer.append(fileSplit).append(logAgentConfigDO.getBizName()).append(fileSplit).append(logAgentConfigDO.getAppName());
+                String outPath = stringBuffer.append(fileSplit).append(myfile.getOriginalFilename()).toString();
+                logger.info("script out put path={}", outPath);
+                Files.write(Paths.get(outPath), myfile.getBytes(), StandardOpenOption.CREATE_NEW);
                 LogPathConfigDO logPathConfigDO = new LogPathConfigDO();
                 logPathConfigDO.setAgentId(agentId);
                 logPathConfigDO.setPattern(pattern);
                 logPathConfigDO.setInputPath(inputPath);
-                logPathConfigDO.setScriptPath(scriptPath);
+                logPathConfigDO.setScriptPath(outPath);
                 int i = logPathConfigMapper.insert(logPathConfigDO);
                 if (i > 0) {
-                    model.addAttribute("tipMsg", "运输文件导入成功");
+                    model.addAttribute("tipMsg", "脚本文件导入成功");
                 }
                 logger.info("import use time {}", System.currentTimeMillis() - currtime);
             } catch (Exception e) {
