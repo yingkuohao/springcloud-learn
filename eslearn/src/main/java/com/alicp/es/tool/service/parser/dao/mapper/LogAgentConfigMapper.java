@@ -22,7 +22,7 @@ public interface LogAgentConfigMapper {
     LogAgentConfigDO getLogAgentConfigDO(@Param("id") Integer id);
 
     @Select("SELECT * FROM log_agent_config WHERE biz_name = #{bizName} AND app_name= #{appName}")
-    LogAgentConfigDO getAgentByApp(String bizName, String appName);
+    LogAgentConfigDO getAgentByApp(@Param("bizName")String bizName, @Param("appName")String appName);
 
     @Insert("insert into log_agent_config(id,biz_name,app_name,ips,gmt_create,gmt_modified)\n" +
             "\tvalues(#{id},#{bizName},#{appName},#{ips},now(),now())")

@@ -1,6 +1,8 @@
 package com.alicp.es.tool.service.parser;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alicp.es.tool.service.parser.dao.mapper.LogAgentConfigMapper;
+import com.alicp.es.tool.service.parser.dao.mapper.LogPathConfigMapper;
 import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
 import com.alicp.es.tool.service.parser.dao.model.LogPathConfigDO;
 import com.alicp.es.tool.service.parser.script.GroovyUtil;
@@ -75,13 +77,13 @@ public class LogAgentService {
                 String pattern = "";
                 if (!StringUtils.isEmpty(logPathConfigDO.getPattern())) {            //"yyyyMMdd_HH"
                     //yingkhtodo:desc:如果有后缀,则需要解析下格式 ,后面的时间变了,文件的起始指针也要变,否则会有问题
-                     pattern = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(logPathConfigDO.getPattern()));
+                    pattern = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(logPathConfigDO.getPattern()));
                 }
                 String logPath = logPathConfigDO.getInputPath() + pattern;
                 //拼装文件的起始偏移量key,如果文件变了,偏移量要设为0,
-                String offKey=LocalHostUtil.getHostAddress()+logPath;
-                if(offSetMap.get(offKey)==null)  {
-                         offSetMap.put(offKey, 0);
+                String offKey = LocalHostUtil.getHostAddress() + logPath;
+                if (offSetMap.get(offKey) == null) {
+                    offSetMap.put(offKey, 0);
                 }
                 logParsing(logPath, logPathConfigDO.getScriptPath());
             } catch (Throwable e) {
@@ -99,7 +101,7 @@ public class LogAgentService {
         try {
             //yingkhtodo:desc:需要记住文件位点.
             //2.解析文件,输入:line,script
-            lines = FileReadUtil.readByLines(logPath,offSetMap);            //yingkhtodo:desc:记住位点去读
+            lines = FileReadUtil.readByLines(logPath, offSetMap);            //yingkhtodo:desc:记住位点去读
 //            lines = Files.readAllLines(Paths.get(logPath), StandardCharsets.UTF_8);
             //yingkhtodo:desc:暂时注释
             lines.forEach(line -> {
@@ -162,9 +164,23 @@ public class LogAgentService {
         //3. 输出到文件
     }
 
+    @Autowired
+    LogAgentConfigMapper agentConfigMapper;
+    @Autowired
+    LogPathConfigMapper logPathConfigMapper;
 
     private LogAgentConfigDO getLogAgentConfigByIp(String appName, String bizName, String ip) {
-        //yingkhtodo:desc:根据ip读数据库.要有一个录入功能
+
+        LogAgentConfigDO logAgentConfigDO = agentConfigMapper.getAgentByApp(bizName, appName);
+        if (logAgentConfigDO == null) {
+            log.error("can't find the config,plese check ,bizName={},appName{}", bizName, appName);
+            return null;
+        }
+        List<LogPathConfigDO> storeDOResult = logPathConfigMapper.getLogPathByAgentId(logAgentConfigDO.getId());
+        logAgentConfigDO.setLogPathConfigDOList(storeDOResult);
+        return logAgentConfigDO;
+
+/*        //yingkhtodo:desc:根据ip读数据库.要有一个录入功能
         //1.读文件,来自配置项
         LogAgentConfigDO logAgentConfigDO = new LogAgentConfigDO();
         logAgentConfigDO.setIps("127.0.0.1");
@@ -179,6 +195,6 @@ public class LogAgentService {
         List<LogPathConfigDO> list = new ArrayList<LogPathConfigDO>();
         list.add(logPathConfigDO);
         logAgentConfigDO.setLogPathConfigDOList(list);
-        return logAgentConfigDO;
+        return logAgentConfigDO;*/
     }
 }
