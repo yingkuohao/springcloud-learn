@@ -1,12 +1,26 @@
 spring:
   profiles:
-    active:  'daily'
+    active:  'develop'
 
 
 server:
   port: 7001
 
-
 alicp:
   log:
     appName:
+
+
+management:
+  port: 7002
+
+
+multipart:
+  maxFileSize: 5Mb
+
+
+mybatis:
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+

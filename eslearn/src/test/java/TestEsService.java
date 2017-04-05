@@ -3,13 +3,10 @@ import com.alicp.es.tool.service.AlertHandler;
 import com.alicp.es.tool.service.AlertService;
 import com.alicp.es.tool.service.BaseQO;
 import com.alicp.es.tool.service.ESService;
+import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
 import org.elasticsearch.search.SearchHits;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +28,8 @@ public class TestEsService extends ESTestBoot {
     ESService esService;
     @Autowired
     AlertService alertService;
+    @Autowired
+    LogAgentConfigDO logAgentConfigDO;
 
     @Test
     public void testLocalSearch() {

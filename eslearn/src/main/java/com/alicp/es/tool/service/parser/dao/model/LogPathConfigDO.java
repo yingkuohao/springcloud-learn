@@ -1,4 +1,4 @@
-package com.alicp.es.tool.service.parser.config;
+package com.alicp.es.tool.service.parser.dao.model;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,11 +9,13 @@ package com.alicp.es.tool.service.parser.config;
  * Descrption:
  */
 
-public class LogPathConfig {
+public class LogPathConfigDO {
+    private Integer id;
+    private Integer agentId;
+
     private String inputPath;   //日志的路径,含名称
     private String pattern; //日志的后缀格式,如yyyy-MM-dd
     private String scriptPath; //脚本路径
-    private String outPutName; //输出名字
 
     public String getInputPath() {
         return inputPath;
@@ -39,11 +41,19 @@ public class LogPathConfig {
         this.scriptPath = scriptPath;
     }
 
-    public String getOutPutName() {
-        return outPutName;
+    public Integer getId() {
+        return id;
     }
 
-    public void setOutPutName(String outPutName) {
-        this.outPutName = outPutName;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(Integer agentId) {
+        this.agentId = agentId;
     }
 }

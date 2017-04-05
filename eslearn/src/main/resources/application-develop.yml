@@ -1,0 +1,30 @@
+config:
+  elk:
+    es:
+      host:   127.0.0.1
+      port:   9300
+      clusterName: my-application
+
+
+spring:
+    datasource:
+        name: test
+        url: jdbc:mysql://rm-2ze60e5hwg306yw8ho.mysql.rds.aliyuncs.com/lottery_jkc
+        username: lottery_jkc
+        password:   Lottery-2016
+        # 使用druid数据源
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 20
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20

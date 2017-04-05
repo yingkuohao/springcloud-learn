@@ -2,6 +2,7 @@ package com.alicp.es.test;
 
 import com.alicp.es.tool.service.parser.FileReadUtil;
 import com.alicp.es.tool.service.parser.LogAgentService;
+import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +23,11 @@ import java.util.concurrent.TimeUnit;
 public class TestLogAgentService extends ESTestBoot {
     @Autowired
     LogAgentService logAgentService;
+
     private static Logger log = LoggerFactory.getLogger(TestLogAgentService.class);
 
     @Test
     public void testLocalSearch() {
-
         logAgentService.readLog();
         try {
             String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/test.log";

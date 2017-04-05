@@ -1,21 +1,16 @@
 package com.alicp.es.tool.service.parser;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alicp.es.tool.service.parser.config.LogAgentConfig;
-import com.alicp.es.tool.service.parser.config.LogPathConfig;
+import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
+import com.alicp.es.tool.service.parser.dao.model.LogPathConfigDO;
 import com.alicp.es.tool.service.parser.script.GroovyUtil;
 import com.alicp.es.tool.service.util.LocalHostUtil;
 import com.alicp.middleware.log.BizLog;
 import com.google.common.collect.ImmutableSet;
-import groovy.lang.Binding;
-import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -59,11 +54,11 @@ public class LogAgentService {
     private void init() {
         String ip = LocalHostUtil.getHostAddress();
         //根据ip获取文件路径信息
-        LogAgentConfig logAgentConfig1 = getLogAgentConfigByIp(appName, bizName, ip);
+        LogAgentConfigDO logAgentConfigDO1 = getLogAgentConfigByIp(appName, bizName, ip);
 
-        List<LogPathConfig> logPathConfigs = logAgentConfig1.getLogPathConfigList();
+        List<LogPathConfigDO> logPathConfigDOs = logAgentConfigDO1.getLogPathConfigDOList();
 
-        logPathConfigs.forEach(n -> {
+        logPathConfigDOs.forEach(n -> {
 
             String scriptPath = n.getScriptPath();
             startScanTask(n);      //不同的path,不同的定时任务
@@ -72,23 +67,23 @@ public class LogAgentService {
     }
 
     //启动扫描任务
-    private void startScanTask(LogPathConfig logPathConfig) {
+    private void startScanTask(LogPathConfigDO logPathConfigDO) {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
                 log.info("startScanTask--" + LocalDateTime.now());
                 //定时扫描改变后缀
                 String pattern = "";
-                if (!StringUtils.isEmpty(logPathConfig.getPattern())) {            //"yyyyMMdd_HH"
+                if (!StringUtils.isEmpty(logPathConfigDO.getPattern())) {            //"yyyyMMdd_HH"
                     //yingkhtodo:desc:如果有后缀,则需要解析下格式 ,后面的时间变了,文件的起始指针也要变,否则会有问题
-                     pattern = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(logPathConfig.getPattern()));
+                     pattern = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(logPathConfigDO.getPattern()));
                 }
-                String logPath = logPathConfig.getInputPath() + pattern;
+                String logPath = logPathConfigDO.getInputPath() + pattern;
                 //拼装文件的起始偏移量key,如果文件变了,偏移量要设为0,
                 String offKey=LocalHostUtil.getHostAddress()+logPath;
                 if(offSetMap.get(offKey)==null)  {
                          offSetMap.put(offKey, 0);
                 }
-                logParsing(logPath, logPathConfig.getScriptPath());
+                logParsing(logPath, logPathConfigDO.getScriptPath());
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
             }
@@ -128,11 +123,11 @@ public class LogAgentService {
         //2.解析文件,输入:line,script
         String ip = LocalHostUtil.getHostAddress();
         //根据ip获取文件路径信息
-        LogAgentConfig logAgentConfig1 = getLogAgentConfigByIp(appName, bizName, ip);
+        LogAgentConfigDO logAgentConfigDO1 = getLogAgentConfigByIp(appName, bizName, ip);
 
-        List<LogPathConfig> logPathConfigs = logAgentConfig1.getLogPathConfigList();
+        List<LogPathConfigDO> logPathConfigDOs = logAgentConfigDO1.getLogPathConfigDOList();
 
-        logPathConfigs.forEach(n -> {
+        logPathConfigDOs.forEach(n -> {
             //遍历日志文件,每一个日志开一个线程
             new Thread(() -> {
                 String pattern = "";
@@ -168,23 +163,22 @@ public class LogAgentService {
     }
 
 
-    private LogAgentConfig getLogAgentConfigByIp(String appName, String bizName, String ip) {
+    private LogAgentConfigDO getLogAgentConfigByIp(String appName, String bizName, String ip) {
         //yingkhtodo:desc:根据ip读数据库.要有一个录入功能
         //1.读文件,来自配置项
-        LogAgentConfig logAgentConfig = new LogAgentConfig();
-        logAgentConfig.setIps(ImmutableSet.of("127.0.0.1"));
-        logAgentConfig.setAppName(appName);
-        logAgentConfig.setBizName(bizName);
+        LogAgentConfigDO logAgentConfigDO = new LogAgentConfigDO();
+        logAgentConfigDO.setIps("127.0.0.1");
+        logAgentConfigDO.setAppName(appName);
+        logAgentConfigDO.setBizName(bizName);
         //yingkhtodo:desc:基础参数
-        LogPathConfig logPathConfig = new LogPathConfig();
-        logPathConfig.setInputPath("/Users/chengjing/Downloads/HNLRG_sample_logs/app01/test.log");
-        logPathConfig.setOutPutName("regex_biz.log");
+        LogPathConfigDO logPathConfigDO = new LogPathConfigDO();
+        logPathConfigDO.setInputPath("/Users/chengjing/Downloads/HNLRG_sample_logs/app01/test.log");
         String scriptPath = "/Users/chengjing/Project/selfLearn/master/springcloud-learn/eslearn/src/main/java/com/alicp/es/tool/service/parser/script/TestGroovy.groovy";
 
-        logPathConfig.setScriptPath(scriptPath);
-        List<LogPathConfig> list = new ArrayList<LogPathConfig>();
-        list.add(logPathConfig);
-        logAgentConfig.setLogPathConfigList(list);
-        return logAgentConfig;
+        logPathConfigDO.setScriptPath(scriptPath);
+        List<LogPathConfigDO> list = new ArrayList<LogPathConfigDO>();
+        list.add(logPathConfigDO);
+        logAgentConfigDO.setLogPathConfigDOList(list);
+        return logAgentConfigDO;
     }
 }
