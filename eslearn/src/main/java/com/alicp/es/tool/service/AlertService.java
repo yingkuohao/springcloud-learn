@@ -30,7 +30,7 @@ public class AlertService {
     AlertHandler failCountAlert;
 
     //每5秒调用一次metrics,记录到log
-    @Scheduled(cron = "0/15 * *  * * ? ")
+    @Scheduled(cron = "0/60 * *  * * ? ")
     public void collect() {            //yingkhtodo:desc:时间做成配置,自身的监控
         //1.捕捉本地的jvm情况
 

@@ -40,8 +40,8 @@ $(function () { $('.tooltip-query').tooltip('toggle');});
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-						<li><a href="$request.contextPath/cuntao/game/home">机器管理</a></li>
-						<li><a href="$request.contextPath/cuntao/province/home">log目录管理</a></li>
+						<li><a href="$request.contextPath/log/agentinfo">代理机器信息</a></li>
+						<li><a href="$request.contextPath/log/config/query">日志目录详情</a></li>
                     </ul>
                 </li>
 				<li class="dropdown">

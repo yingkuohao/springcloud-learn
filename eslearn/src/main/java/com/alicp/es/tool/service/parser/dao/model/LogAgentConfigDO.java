@@ -1,5 +1,6 @@
 package com.alicp.es.tool.service.parser.dao.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,14 @@ public class LogAgentConfigDO {
     private String ips; //服务器ip  ,逗号分隔
 
     private List<LogPathConfigDO> logPathConfigDOList;
+
+    // 创建时间
+   	private Date gmtCreate;
+   	// 更新时间
+   	private Date gmtModified;
+
+
+
 
     public String getBizName() {
         return bizName;
@@ -59,5 +68,21 @@ public class LogAgentConfigDO {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public Date getGmtModified() {
+        return gmtModified;
+    }
+
+    public void setGmtModified(Date gmtModified) {
+        this.gmtModified = gmtModified;
     }
 }

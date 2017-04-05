@@ -1,0 +1,60 @@
+#set($title = 'logconfig查询')
+#set($title_sub = '查询')
+#set($title_href = 'log/logconfig')
+<div class="container" style=" overflow-x: auto;">
+    <form id="salesForm" class="form-horizontal required-validate" role="form" method="post"
+          action="/log/agent/query">
+        <div class="form-group">
+            <label class="col-sm-1 control-label">业务名称</label>
+            <div class="col-sm-2">
+                <input class="form-control" name="bizName" type="text" placeholder="业务名称" value="$!bizName"
+                       id="bizName"/>
+            </div>
+            <label class="col-sm-1 control-label">应用名称</label>
+            <div class="col-sm-2">
+                <input class="form-control" name="appName" type="text" placeholder="应用名称" value="$!appName"
+                       id="appName"/>
+            </div>
+            <div class="col-sm-2">
+                <button type="submit" class="tooltip-query btn btn-primary">查询</button>
+            </div>
+        </div>
+    </form>
+    #parse("/control/tipMsg.vm")
+    #if($!ssdList)
+        <table class="table table-bordered table-striped" style=" overflow-x: auto;width:100%">
+            <caption>游戏列表，总记录数【$!ssdList.size()】</caption>
+            <thead>
+            <tr class="danger">
+
+                <th>ID</th>
+                <th>AgentId</th>
+                <th>日志路径</th>
+                <th>日志后缀(如yyyyMMHH)</th>
+                <th>脚本路径</th>
+                <th>创建时间</th>
+                <th>修改时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+                #foreach($ssd in $ssdList)
+                <tr>
+                    <td>$ssd.id</td>
+                    <td>$ssd.agentId</td>
+                    <td>$!{ssd.inputPath}</td>
+                    <td>$!{ssd.pattern}</td>
+                    <td>$!{ssd.scriptPath}</td>
+                    <td>$!{ssd.gmtCreate}</td>
+                    <td>$!{ssd.gmtModified}</td>
+                    <td>
+                        <a href="/log/path/query?agentId=$ssd.id"
+                           class="tooltip-query btn btn-success">日志路径配置</a>
+                    </td>
+                </tr>
+                #end
+            </tbody>
+        </table>
+    #end
+</div>
+

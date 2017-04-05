@@ -36,7 +36,9 @@ public class TestAgentConfigMapper extends ESTestBoot {
         Integer id = 1;
         LogAgentConfigDO storeDO = agentConfigMapper.getLogAgentConfigDO(id);
         LogAgentConfigDO storeDO2 = agentConfigMapper.getAgentByApp(bizName,appName);
+        LogAgentConfigDO storeDO3 = agentConfigMapper.getAgentByApp(null,null);
         System.out.println("storeDO2="+storeDO2);
+        System.out.println("storeDO3="+storeDO3);
     }
 
     @Test
