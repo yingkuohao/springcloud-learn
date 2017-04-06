@@ -28,6 +28,9 @@ public interface LogAgentConfigMapper {
             "\tvalues(#{id},#{bizName},#{appName},#{ips},now(),now())")
     int insert(LogAgentConfigDO LogAgentConfigDO);
 
+
+    @Select("SELECT * FROM log_agent_config ")
+    List<LogAgentConfigDO> getAllLogAgentConfigDO();
     //    @Update("\tupdate log_agent_config\n" +
     //            "\t\tset store_id=#{storeId},payment_acconut=#{paymentAcconut},payment_acconut_quota=#{paymentAcconutQuota},open_account=#{openAccount},open_acount_quota=#{openAcountQuota},gmt_modified=now(),store_acount_number=#{storeAcountNumber},store_acount_password=#{storeAcountPassword},center_store_id=#{centerStoreId}\n" +
     //            "\t\twhere id = #{id} ")

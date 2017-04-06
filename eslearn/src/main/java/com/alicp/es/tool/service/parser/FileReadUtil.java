@@ -192,10 +192,11 @@ public class FileReadUtil {
             rf = new RandomAccessFile(fileName, "rw");
 
             //设置到此文件开头测量到的文件指针偏移量，在该位置发生下一个读取或写入操作
-            String offKey= LocalHostUtil.getHostAddress()+fileName;
-            int lastSize = offSetMap.get(offKey);
-            if(lastSize==0) {
+            String offKey= fileName;
+            Integer lastSize = offSetMap.get(offKey);
+            if(lastSize==null || lastSize==0) {
                 chars =0; //如果文件的起始位置变成了0,偏移量也要跟着变
+                lastSize= 0;
             }
             rf.seek(chars);
             //获取文件的行数

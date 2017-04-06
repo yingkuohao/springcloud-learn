@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap
  * Date: 17/3/31
  * Time: 下午1:41
  * CopyRight: taobao
- * Descrption: 
+ * Descrption:         /Users/chengjing/Project/selfLearn/master/springcloud-learn/eslearn/src/main/java/com/alicp/es/tool/service/parser/script/TestGroovy.groovy
  */
 
 class TestGroovy {

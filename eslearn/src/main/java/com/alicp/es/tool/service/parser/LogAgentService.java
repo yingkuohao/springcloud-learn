@@ -1,5 +1,6 @@
 package com.alicp.es.tool.service.parser;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alicp.es.tool.service.parser.dao.mapper.LogAgentConfigMapper;
 import com.alicp.es.tool.service.parser.dao.mapper.LogPathConfigMapper;
@@ -9,6 +10,7 @@ import com.alicp.es.tool.service.parser.script.GroovyUtil;
 import com.alicp.es.tool.service.util.LocalHostUtil;
 import com.alicp.middleware.log.BizLog;
 import com.google.common.collect.ImmutableSet;
+import org.elasticsearch.threadpool.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class LogAgentService {
     private static Logger log = LoggerFactory.getLogger(LogAgentService.class);
     String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/";
+    String inputFile = "/Users/chengjing/logs/alicplog/testOut.log";
     String outPutName = "regex_biz.log";
 
     String appName = "lottery";
@@ -51,10 +53,119 @@ public class LogAgentService {
 
     private static Map<String, Integer> offSetMap = new HashMap<String, Integer>();
 
-    //初始化定时任务,每10秒执行一次,每一个log一个线程池
+    private Map<String, BlockingQueue<String>> resourceMap = new HashMap<String, BlockingQueue<String>>();
+
     @PostConstruct
+    private void initNew() {
+        logScanStart();
+        initParseConsumer();
+    }
+
+
+    //定时任务:每10秒读一次log,记录偏移量,下一次从偏移开始读
+    private void logScanStart() {
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            try {
+                log.info("startScanTask--" + LocalDateTime.now());
+                initLogProducer();
+            } catch (Throwable e) {
+                log.error(e.getMessage(), e);
+            }
+        }, 1, 10, TimeUnit.SECONDS);
+
+    }
+
+    private void initLogProducer() {
+
+        try {
+            String offKey = inputFile;
+            if (offSetMap.get(offKey) == null) {
+                offSetMap.put(offKey, 0);
+            }
+            List<String> lines = FileReadUtil.readByLines(inputFile, offSetMap);
+            lines.forEach(line -> {
+                //mapreduce:
+                if (!StringUtils.isEmpty(line)) {
+
+                    JSONObject jsonObject = JSONObject.parseObject(line);
+                    log.info("---inputLinse=", jsonObject.toJSONString());
+                    JSONObject fields = (JSONObject) jsonObject.get("fields");
+                    String appName = fields.getString("app_name");
+                    String ip = fields.getString("source_ip");
+                    String logName = fields.getString("log_name");
+                    String key = appName + ip + logName;         //应用+ip+日志名称绝对唯一的key ,这里要和在系统中配置的一样,否则会和线程对不上
+                    BlockingQueue<String> resourceQueue = resourceMap.get(key);
+                    if (resourceQueue == null) {
+                        resourceQueue = new LinkedBlockingQueue<String>();
+                        resourceMap.put(ip, resourceQueue);
+                    }
+
+                    try {
+                        //得到队列,把当前行分发到目标队列.
+                        resourceQueue.put(line);
+                        resourceMap.put(key, resourceQueue);
+                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+                        log.error("initLogProducer error,e={}",e);
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info("resourceMap.size={},keys={}", resourceMap.size(), resourceMap.keySet());
+    }
+
+    public void initParseConsumer() {
+        ExecutorService threadPool = Executors.newFixedThreadPool(5);
+        List<LogAgentConfigDO> logAgentConfigDOList = agentConfigMapper.getAllLogAgentConfigDO();
+        logAgentConfigDOList.forEach(logAgentConfigDO -> {
+            List<LogPathConfigDO> logPathConfigDOList = logPathConfigMapper.getLogPathByAgentId(logAgentConfigDO.getId());
+            String ips = logAgentConfigDO.getIps();
+            String[] ipArr = ips.split(",");
+            for (String curIp : ipArr) {
+                //每个服务,每个ip一个线程;
+                logPathConfigDOList.forEach(n -> {//yingkhtodo:desc:具体如何按文件读取,生成线程有待细化
+                    String scriptPath = n.getScriptPath();
+//                                startScanTask(n);      //不同的path,不同的定时任务
+                    String inputPath = n.getInputPath();
+                    String shortName = inputPath.substring(inputPath.lastIndexOf("/")+1, inputPath.length());
+                    String key = logAgentConfigDO.getAppName() + curIp + shortName;     //注意之类要和filebeat重配置的一样,否则取不到
+
+                    BlockingQueue<String> resourceQueue = resourceMap.get(key);
+                    if (resourceQueue == null) {
+                        log.error("can't find the queue,key={}", key);
+                    } else {
+                        threadPool.submit(new PareseCallable(resourceQueue, scriptPath, bizLog));
+                    }
+
+                });
+            }
+
+        });
+    }
+
+
+    //初始化定时任务,每10秒执行一次,每一个log一个线程池
+//    @PostConstruct
     private void init() {
         String ip = LocalHostUtil.getHostAddress();
+ /*       List<LogAgentConfigDO> logAgentConfigDOList = agentConfigMapper.getAllLogAgentConfigDO();
+        logAgentConfigDOList.forEach(logAgentConfigDO -> {
+            List<LogPathConfigDO> logPathConfigDOList = logPathConfigMapper.getLogPathByAgentId(logAgentConfigDO.getId());
+            String ips = logAgentConfigDO.getIps();
+            String[] ipArr = ips.split(",");
+            for (String curIp : ipArr) {
+                //每个服务,每个ip一个线程;
+                logPathConfigDOList.forEach(n -> {//yingkhtodo:desc:具体如何按文件读取,生成线程有待细化
+                         String scriptPath = n.getScriptPath();
+                         startScanTask(n);      //不同的path,不同的定时任务
+                     });
+            }
+
+        });*/
+
         //根据ip获取文件路径信息
         LogAgentConfigDO logAgentConfigDO1 = getLogAgentConfigByIp(appName, bizName, ip);
 

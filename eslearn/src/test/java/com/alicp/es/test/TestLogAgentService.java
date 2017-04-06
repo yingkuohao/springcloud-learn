@@ -1,5 +1,6 @@
 package com.alicp.es.test;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alicp.es.tool.service.parser.FileReadUtil;
 import com.alicp.es.tool.service.parser.LogAgentService;
 import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -28,11 +30,14 @@ public class TestLogAgentService extends ESTestBoot {
 
     @Test
     public void testLocalSearch() {
-        logAgentService.readLog();
+//        logAgentService.readLog();
         try {
-            String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/test.log";
-            startWriteTest(path);
-            Thread.sleep(1000 * 30);
+//            String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/test2.log";
+            String path = "/Users/chengjing/logs/alicplog/test2.log";
+            startWriteTest();
+//            testWrite();
+            Thread.sleep(1000 * 30)
+            ;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -40,12 +45,29 @@ public class TestLogAgentService extends ESTestBoot {
 
     int i = 0;
 
-    //test:写入
-    private void startWriteTest(String logPath) {
+    @Test
+    public void testWrite() {
+        String path = "/Users/chengjing/logs/alicplog/test2.log";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("test1", "aa");
+        String s = jsonObject.toJSONString();
+        try {
+            FileReadUtil.writeFile(path, s + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startWriteTest() {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
-                String s = String.valueOf(i++) + "\n";
-                FileReadUtil.writeFile(logPath, s);
+
+                String path = "/Users/chengjing/logs/alicplog/test2.log";
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("test1", "aa");
+                jsonObject.put("test2", i++);
+                String s = jsonObject.toJSONString();
+                FileReadUtil.writeFile(path, s+"\n");
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
             }
