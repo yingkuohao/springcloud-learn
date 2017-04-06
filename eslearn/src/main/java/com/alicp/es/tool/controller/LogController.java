@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -179,8 +181,10 @@ public class LogController {
                 StringBuffer stringBuffer = new StringBuffer(esConfig.getScriptBasePath());
                 stringBuffer.append(fileSplit).append(logAgentConfigDO.getBizName()).append(fileSplit).append(logAgentConfigDO.getAppName());
                 String outPath = stringBuffer.append(fileSplit).append(myfile.getOriginalFilename()).toString();
+
                 logger.info("script out put path={}", outPath);
-                Files.write(Paths.get(outPath), myfile.getBytes(), StandardOpenOption.CREATE_NEW);
+                createFile(myfile, outPath);
+
                 LogPathConfigDO logPathConfigDO = new LogPathConfigDO();
                 logPathConfigDO.setAgentId(agentId);
                 logPathConfigDO.setPattern(pattern);
@@ -196,5 +200,20 @@ public class LogController {
             }
         }
         return getLogConfigInfo(model, agentId);
+    }
+
+    private void createFile(@RequestParam("myfile") MultipartFile myfile, String outPath) throws IOException {
+        File file = new File(outPath);
+        if (file.exists()) {
+            file.delete();
+            logger.info("file exist,delete ok!path={}", outPath);
+        }
+        if (!file.getParentFile().exists()) {
+            if (!file.getParentFile().mkdirs()) {
+                logger.error("create new file error,outPath=" + outPath);
+            }
+            logger.info("file dir not exist,crate parentDir ok!,outPath={}", outPath);
+        }
+        Files.write(Paths.get(outPath), myfile.getBytes(), StandardOpenOption.CREATE);
     }
 }

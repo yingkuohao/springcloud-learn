@@ -36,23 +36,23 @@ $(function () { $('.tooltip-query').tooltip('toggle');});
             <ul class="nav navbar-nav">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-file"></span> 日志数据
+                        <span class="glyphicon glyphicon-file"></span> 日志解析
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-						<li><a href="$request.contextPath/log/agentinfo">代理机器信息</a></li>
-						<li><a href="$request.contextPath/log/config/query">日志目录详情</a></li>
+						<li><a href="$request.contextPath/log/agentinfo">业务基础信息</a></li>
+						<li><a href="$request.contextPath/log/config/query">日志目录信息</a></li>
                     </ul>
                 </li>
 				<li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-list-alt"></span> 服务监控
+                        <span class="glyphicon glyphicon-list-alt"></span> 监控报警
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="$request.contextPath/cuntao/terminalSale/home">服务提供</a></li>
+                        <li><a href="$request.contextPath/cuntao/terminalSale/home">报警规则</a></li>
 						<li class="divider"></li>
-						<li><a href="$request.contextPath/cuntao/sales/home">服务消费</a></li>
+						<li><a href="$request.contextPath/cuntao/sales/home">报警列表</a></li>
                     </ul>
                 </li>
             </ul>

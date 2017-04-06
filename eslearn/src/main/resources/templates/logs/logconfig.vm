@@ -31,7 +31,7 @@
                 <th>脚本路径</th>
                 <th>创建时间</th>
                 <th>修改时间</th>
-                <th>操作</th>
+             #*   <th>操作</th>*#
             </tr>
             </thead>
             <tbody>
@@ -44,10 +44,10 @@
                     <td>$!{ssd.scriptPath}</td>
                     <td>$!{ssd.gmtCreate}</td>
                     <td>$!{ssd.gmtModified}</td>
-                    <td>
+          #*          <td>
                         <a href="/log/path/query?agentId=$ssd.id"
                            class="tooltip-query btn btn-success">日志路径配置</a>
-                    </td>
+                    </td>*#
                 </tr>
                 #end
             </tbody>
