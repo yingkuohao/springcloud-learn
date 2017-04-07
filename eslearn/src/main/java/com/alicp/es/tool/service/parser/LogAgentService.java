@@ -156,7 +156,7 @@ public class LogAgentService {
     }
 
     private void outLogDelete() {
-        //定时任务:定时清除文件
+        //定时任务:定时清除文件 ,防止文件过大
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             File file = new File(esConfig.getOriginLogPath());
             FileChannel fc = null;
