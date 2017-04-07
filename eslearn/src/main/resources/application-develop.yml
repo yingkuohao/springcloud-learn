@@ -5,6 +5,7 @@ config:
       port:   9300
       clusterName: my-application
       scriptBasePath:  /Users/chengjing/logs/alicplog
+      originLogPath: /Users/chengjing/logs/alicplog/testOut.log
 
 spring:
     datasource:

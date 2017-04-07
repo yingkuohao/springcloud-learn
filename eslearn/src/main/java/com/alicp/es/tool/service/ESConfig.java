@@ -20,6 +20,7 @@ public class ESConfig {
     private String clusterName;      //集群名称
 
     private String scriptBasePath;      //脚本基础路径
+    private String originLogPath;      //原始日志路径
 
     public String getHost() {
         return this.host;
@@ -51,5 +52,13 @@ public class ESConfig {
 
     public void setScriptBasePath(String scriptBasePath) {
         this.scriptBasePath = scriptBasePath;
+    }
+
+    public String getOriginLogPath() {
+        return originLogPath;
+    }
+
+    public void setOriginLogPath(String originLogPath) {
+        this.originLogPath = originLogPath;
     }
 }

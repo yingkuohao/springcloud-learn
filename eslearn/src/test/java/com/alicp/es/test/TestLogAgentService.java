@@ -50,9 +50,21 @@ public class TestLogAgentService extends ESTestBoot {
         String path = "/Users/chengjing/logs/alicplog/test2.log";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("test1", "aa");
+        jsonObject.put("test1", "中文");
+        jsonObject.put("test2", i++);
         String s = jsonObject.toJSONString();
+        String multi= "02/06-16:59:59.578 [08] <12:0091:SITE_40506360> OXi::openAPI::sendRequest:     <response>\n" +
+                "02/06-16:59:59.578 [08] <12:0091:SITE_40506360> OXi::openAPI::sendRequest:         <returnStatus>\n" +
+                "02/06-16:59:59.578 [08] <12:0091:SITE_40506360> OXi::openAPI::sendRequest:             <code>001</code>\n" +
+                "02/06-16:59:59.578 [08] <12:0091:SITE_40506360> OXi::openAPI::sendRequest:             <message>success</message>\n" ;
+
+        String javaMulti="Exception in thread \"main\" java.lang.NullPointerException\n" +
+                "        at com.example.myproject.Book.getTitle(Book.java:16)\n" +
+                "[        at com.example.myproject.Author.getBookTitles(Author.java:25)\n" +
+                "[        at com.example.myproject.Bootstrap.main(Bootstrap.java:14)\n"+
+                "I am the end";
         try {
-            FileReadUtil.writeFile(path, s + "\n");
+            FileReadUtil.writeFile(path, s + "\n"+javaMulti);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,12 +74,13 @@ public class TestLogAgentService extends ESTestBoot {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
 
-                String path = "/Users/chengjing/logs/alicplog/test2.log";
+        /*        String path = "/Users/chengjing/logs/alicplog/test2.log";
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("test1", "aa");
                 jsonObject.put("test2", i++);
                 String s = jsonObject.toJSONString();
-                FileReadUtil.writeFile(path, s+"\n");
+                FileReadUtil.writeFile(path, s+"\n");*/
+                testWrite();
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
             }

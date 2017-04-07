@@ -2,6 +2,7 @@ package com.alicp.es.tool.service.parser;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alicp.es.tool.service.ESConfig;
 import com.alicp.es.tool.service.parser.dao.mapper.LogAgentConfigMapper;
 import com.alicp.es.tool.service.parser.dao.mapper.LogPathConfigMapper;
 import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
@@ -19,7 +20,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -41,15 +46,18 @@ import java.util.concurrent.*;
 @Component
 @EnableScheduling
 public class LogAgentService {
+    public static final int LOG_MAX_SIZE = 1024 * 5;
     private static Logger log = LoggerFactory.getLogger(LogAgentService.class);
     String path = "/Users/chengjing/Downloads/HNLRG_sample_logs/app01/";
-    String inputFile = "/Users/chengjing/logs/alicplog/testOut.log";
+    //    String inputFile = "/Users/chengjing/logs/alicplog/testOut.log";
     String outPutName = "regex_biz.log";
 
     String appName = "lottery";
     String bizName = "xingyunsaiche";
     @Autowired
     BizLog bizLog;
+    @Autowired
+    ESConfig esConfig;
 
     private static Map<String, Integer> offSetMap = new HashMap<String, Integer>();
 
@@ -59,6 +67,7 @@ public class LogAgentService {
     private void initNew() {
         logScanStart();
         initParseConsumer();
+        outLogDelete();
     }
 
 
@@ -78,11 +87,11 @@ public class LogAgentService {
     private void initLogProducer() {
 
         try {
-            String offKey = inputFile;
+            String offKey = esConfig.getOriginLogPath();
             if (offSetMap.get(offKey) == null) {
                 offSetMap.put(offKey, 0);
             }
-            List<String> lines = FileReadUtil.readByLines(inputFile, offSetMap);
+            List<String> lines = FileReadUtil.readByLines(esConfig.getOriginLogPath(), offSetMap);
             lines.forEach(line -> {
                 //mapreduce:
                 if (!StringUtils.isEmpty(line)) {
@@ -106,7 +115,7 @@ public class LogAgentService {
                         resourceMap.put(key, resourceQueue);
                     } catch (InterruptedException e) {
 //                        e.printStackTrace();
-                        log.error("initLogProducer error,e={}",e);
+                        log.error("initLogProducer error,e={}", e);
                     }
                 }
             });
@@ -130,7 +139,7 @@ public class LogAgentService {
                     String scriptPath = n.getScriptPath();
 //                                startScanTask(n);      //不同的path,不同的定时任务
                     String inputPath = n.getInputPath();
-                    String shortName = inputPath.substring(inputPath.lastIndexOf("/")+1, inputPath.length());
+                    String shortName = inputPath.substring(inputPath.lastIndexOf("/") + 1, inputPath.length());
                     String key = logAgentConfigDO.getAppName() + curIp + shortName;     //注意之类要和filebeat重配置的一样,否则取不到
 
                     BlockingQueue<String> resourceQueue = resourceMap.get(key);
@@ -146,6 +155,43 @@ public class LogAgentService {
         });
     }
 
+    private void outLogDelete() {
+        //定时任务:定时清除文件
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            File file = new File(esConfig.getOriginLogPath());
+            FileChannel fc = null;
+            try {
+                String path=esConfig.getOriginLogPath();
+//                String path = "/Users/chengjing/logs/alicplog/test2.log";
+                File f = new File(path);
+                if (f.exists() && f.isFile()) {
+                    FileInputStream fis = new FileInputStream(f);
+                    fc = fis.getChannel();
+                    long size = fc.size();
+                    log.info("----file={},fileSize={}", esConfig.getOriginLogPath(), size);
+                    if (size >= LOG_MAX_SIZE) {
+                        log.info("log size is max ,begin delete");
+                        f.delete();
+                    }
+                } else {
+                    log.info("file doesn't exist or is not a file");
+                }
+            } catch (FileNotFoundException e) {
+                log.error("FileNotFoundException", e);
+            } catch (IOException e) {
+                log.error("IOException", e);
+            } finally {
+                if (null != fc) {
+                    try {
+                        fc.close();
+                    } catch (IOException e) {
+                        log.error("IOException", e);
+                    }
+                }
+            }
+        }, 1, 5, TimeUnit.SECONDS);
+
+    }
 
     //初始化定时任务,每10秒执行一次,每一个log一个线程池
 //    @PostConstruct
