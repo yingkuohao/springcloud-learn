@@ -4,6 +4,7 @@ import com.alicp.es.tool.service.AlertService;
 import com.alicp.es.tool.service.BaseQO;
 import com.alicp.es.tool.service.ESService;
 import com.alicp.es.tool.service.parser.dao.model.LogAgentConfigDO;
+import com.alicp.middleware.log.BizLog;
 import org.elasticsearch.search.SearchHits;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,15 @@ public class TestEsService extends ESTestBoot {
     @Autowired
     AlertService alertService;
     @Autowired
-    LogAgentConfigDO logAgentConfigDO;
+    BizLog log;
 
     @Test
+    public void testlog() {
+
+        log.instance().log("key","111").log("value",123) .build();
+
+    }
+        @Test
     public void testLocalSearch() {
         //搜索数据
         String index = "blog";
